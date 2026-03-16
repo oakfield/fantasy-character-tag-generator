@@ -101,6 +101,9 @@ function generateRandomCharacter() {
     }
   }
 
+  // Remove any accidental conflicts (e.g. two headwear items from overlapping presets)
+  enforceExclusionGroups(selectedCostumes);
+
   return {
     speciesId: species.id,
     sexId: sex.id,

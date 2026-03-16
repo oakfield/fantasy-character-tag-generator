@@ -206,14 +206,20 @@ function bindEvents() {
 
     if (target.checked) {
       state.selectedCostumes.add(id);
+
+      // Deselect any other item in the same exclusion group
+      const group = EXCLUSION_GROUPS.find((g) => g.includes(id));
+      if (group) {
+        for (const conflictId of group) {
+          if (conflictId !== id) state.selectedCostumes.delete(conflictId);
+        }
+      }
     } else {
       state.selectedCostumes.delete(id);
     }
 
-    // Toggle active class on the parent label
-    const label = target.closest('.costume-chip');
-    if (label) label.classList.toggle('costume-chip--active', target.checked);
-
+    // Re-render costumes so deselected chips update visually
+    renderCostumes();
     renderOutput();
     renderSummary();
   });

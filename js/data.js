@@ -256,6 +256,22 @@ const JOBS = [
  * @property {CostumeItem[]} items
  */
 
+/**
+ * Groups of costume item IDs where only one may be selected at a time.
+ * Selecting a new item in a group automatically deselects the others.
+ * @type {string[][]}
+ */
+const EXCLUSION_GROUPS = [
+  // Body armor — only one protection tier at a time
+  ['plate_armor', 'chainmail', 'leather_armor'],
+  // Headwear — only one piece on your head at a time
+  ['witch_hat', 'crown', 'circlet', 'hood', 'helmet', 'bandana', 'feathered_hat', 'tricorne', 'horned_helm'],
+  // Hand protection — gauntlets and gloves cover the same anatomy
+  ['gloves', 'gauntlets'],
+  // Bottoms — only one lower-body garment at a time
+  ['trousers', 'skirt', 'shorts'],
+];
+
 /** @type {CostumeCategory[]} */
 const COSTUME_CATEGORIES = [
   {

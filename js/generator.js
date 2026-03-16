@@ -23,6 +23,29 @@ function resolveTagsSpec(spec, sex) {
 // ---------------------------------------------------------------------------
 
 /**
+ * Enforce mutual exclusion groups on a selectedCostumes Set in-place.
+ * When multiple items from the same group are present, only the first one
+ * (in group-definition order) is kept. This is used by the randomizer to
+ * guarantee a coherent outfit after building from presets.
+ *
+ * @param {Set<string>} selectedCostumes - Modified in place
+ */
+function enforceExclusionGroups(selectedCostumes) {
+  for (const group of EXCLUSION_GROUPS) {
+    let kept = false;
+    for (const id of group) {
+      if (selectedCostumes.has(id)) {
+        if (kept) {
+          selectedCostumes.delete(id);
+        } else {
+          kept = true;
+        }
+      }
+    }
+  }
+}
+
+/**
  * Return the set of costume IDs that are incompatible with the given species.
  * @param {string} speciesId
  * @returns {Set<string>}
