@@ -262,8 +262,11 @@ const JOBS = [
  * @type {string[][]}
  */
 const EXCLUSION_GROUPS = [
-  // Body armor — only one protection tier at a time
-  ['plate_armor', 'chainmail', 'leather_armor'],
+  // Plate and leather are mutually exclusive (different protection tiers)
+  ['plate_armor', 'leather_armor'],
+  // Chainmail and leather are mutually exclusive for the same reason
+  // (chainmail + plate is historically valid and allowed)
+  ['chainmail', 'leather_armor'],
   // Headwear — only one piece on your head at a time
   ['witch_hat', 'crown', 'circlet', 'hood', 'helmet', 'bandana', 'feathered_hat', 'tricorne', 'horned_helm'],
   // Hand protection — gauntlets and gloves cover the same anatomy

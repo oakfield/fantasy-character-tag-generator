@@ -207,11 +207,12 @@ function bindEvents() {
     if (target.checked) {
       state.selectedCostumes.add(id);
 
-      // Deselect any other item in the same exclusion group
-      const group = EXCLUSION_GROUPS.find((g) => g.includes(id));
-      if (group) {
-        for (const conflictId of group) {
-          if (conflictId !== id) state.selectedCostumes.delete(conflictId);
+      // Deselect conflicting items across all exclusion groups this item belongs to
+      for (const group of EXCLUSION_GROUPS) {
+        if (group.includes(id)) {
+          for (const conflictId of group) {
+            if (conflictId !== id) state.selectedCostumes.delete(conflictId);
+          }
         }
       }
     } else {
