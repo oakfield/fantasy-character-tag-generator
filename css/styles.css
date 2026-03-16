@@ -431,6 +431,11 @@ body {
   gap: var(--sp-2);
 }
 
+.btn--reset {
+  width: 100%;
+  padding: var(--sp-2) var(--sp-5);
+}
+
 .random-hint {
   font-size: 0.75rem;
   color: var(--clr-text-muted);

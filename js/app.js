@@ -9,10 +9,12 @@
 // ---------------------------------------------------------------------------
 
 /** @type {import('./generator.js').CharacterState} */
+const RESET_STATE = { speciesId: 'human', sexId: 'female', jobId: '' };
+
 const state = {
-  speciesId: SPECIES[0].id,
-  sexId: SEX_OPTIONS[0].id,
-  jobId: JOBS[0].id,
+  speciesId: RESET_STATE.speciesId,
+  sexId: RESET_STATE.sexId,
+  jobId: RESET_STATE.jobId,
   selectedCostumes: new Set(),
 };
 
@@ -54,9 +56,9 @@ function renderSexRadios() {
 /** Populate the job <select>. */
 function renderJobSelect() {
   const select = $('job-select');
-  select.innerHTML = JOBS.map(
-    (j) => `<option value="${j.id}">${j.label}</option>`
-  ).join('');
+  select.innerHTML =
+    '<option value="">— None —</option>' +
+    JOBS.map((j) => `<option value="${j.id}">${j.label}</option>`).join('');
   select.value = state.jobId;
 }
 
@@ -142,9 +144,19 @@ function renderAll() {
 // State mutation helpers
 // ---------------------------------------------------------------------------
 
+/** Reset to the default state: Human, Female, no job, no costume. */
+function resetState() {
+  applyState({
+    speciesId: RESET_STATE.speciesId,
+    sexId: RESET_STATE.sexId,
+    jobId: RESET_STATE.jobId,
+    selectedCostumes: new Set(),
+  });
+}
+
 /**
  * Apply an external CharacterState to `state`, then fully re-render.
- * Used by the randomizer to replace all selections at once.
+ * Used by the randomizer and resetState to replace all selections at once.
  * @param {import('./generator.js').CharacterState} newState
  */
 function applyState(newState) {
@@ -228,6 +240,11 @@ function bindEvents() {
   // Random button
   $('random-btn').addEventListener('click', () => {
     applyState(generateRandomCharacter());
+  });
+
+  // Reset button
+  $('reset-btn').addEventListener('click', () => {
+    resetState();
   });
 
   // Copy button
