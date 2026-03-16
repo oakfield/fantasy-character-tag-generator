@@ -262,17 +262,38 @@ const JOBS = [
  * @type {string[][]}
  */
 const EXCLUSION_GROUPS = [
-  // Plate and leather are mutually exclusive (different protection tiers)
+  // Armor — plate/chainmail can stack; leather is a separate tier
   ['plate_armor', 'leather_armor'],
-  // Chainmail and leather are mutually exclusive for the same reason
-  // (chainmail + plate is historically valid and allowed)
-  ['chainmail', 'leather_armor'],
+  ['chainmail',   'leather_armor'],
+
   // Headwear — only one piece on your head at a time
   ['witch_hat', 'crown', 'circlet', 'hood', 'helmet', 'bandana', 'feathered_hat', 'tricorne', 'horned_helm'],
+
   // Hand protection — gauntlets and gloves cover the same anatomy
   ['gloves', 'gauntlets'],
+
   // Bottoms — only one lower-body garment at a time
   ['trousers', 'skirt', 'shorts'],
+
+  // Robe is a full-body garment — mutually exclusive with all other clothing
+  ['robe', 'toga'],
+  ['robe', 'tunic'],
+  ['robe', 'vest'],
+  ['robe', 'cloak'],
+  ['robe', 'cape'],
+  ['robe', 'trousers'],
+  ['robe', 'skirt'],
+  ['robe', 'shorts'],
+
+  // Toga is a full-body garment — mutually exclusive with all other clothing and belt
+  ['toga', 'tunic'],
+  ['toga', 'vest'],
+  ['toga', 'cloak'],
+  ['toga', 'cape'],
+  ['toga', 'trousers'],
+  ['toga', 'skirt'],
+  ['toga', 'shorts'],
+  ['toga', 'belt'],
 ];
 
 /** @type {CostumeCategory[]} */
