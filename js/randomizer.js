@@ -9,9 +9,6 @@
  *    typical fantasy illustration conventions.
  */
 
-import { SPECIES, SEX_OPTIONS, JOBS } from './data.js';
-import { getIncompatibleCostumes } from './generator.js';
-
 // ---------------------------------------------------------------------------
 // Weighted-random helper
 // ---------------------------------------------------------------------------
@@ -82,7 +79,7 @@ const DEFAULT_PRESET = { required: ['boots', 'tunic'], optional: ['belt', 'cloak
  *
  * @returns {import('./generator.js').CharacterState}
  */
-export function generateRandomCharacter() {
+function generateRandomCharacter() {
   const species = weightedRandom(SPECIES);
   const sex     = weightedRandom(SEX_OPTIONS);
   const job     = weightedRandom(JOBS);

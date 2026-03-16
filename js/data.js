@@ -23,7 +23,7 @@
  */
 
 /** @type {Species[]} */
-export const SPECIES = [
+const SPECIES = [
   {
     id: 'human',
     label: 'Human',
@@ -192,7 +192,7 @@ export const SPECIES = [
  */
 
 /** @type {SexOption[]} */
-export const SEX_OPTIONS = [
+const SEX_OPTIONS = [
   { id: 'female', label: 'Female', tag: '1girl', weight: 55 },
   { id: 'male',   label: 'Male',   tag: '1boy',  weight: 45 },
 ];
@@ -210,7 +210,7 @@ export const SEX_OPTIONS = [
  */
 
 /** @type {Job[]} */
-export const JOBS = [
+const JOBS = [
   { id: 'adventurer',     label: 'Adventurer',     tags: ['adventurer'],     weight: 10 },
   { id: 'warrior',        label: 'Warrior',        tags: ['warrior'],        weight: 9  },
   { id: 'knight',         label: 'Knight',         tags: ['knight'],         weight: 8  },
@@ -257,7 +257,7 @@ export const JOBS = [
  */
 
 /** @type {CostumeCategory[]} */
-export const COSTUME_CATEGORIES = [
+const COSTUME_CATEGORIES = [
   {
     id: 'armor',
     label: 'Armor & Protection',

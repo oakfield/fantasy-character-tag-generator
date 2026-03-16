@@ -4,10 +4,6 @@
  * All business logic lives in generator.js / randomizer.js.
  */
 
-import { SPECIES, SEX_OPTIONS, JOBS, COSTUME_CATEGORIES } from './data.js';
-import { generateTags, getIncompatibleCostumes } from './generator.js';
-import { generateRandomCharacter } from './randomizer.js';
-
 // ---------------------------------------------------------------------------
 // State
 // ---------------------------------------------------------------------------

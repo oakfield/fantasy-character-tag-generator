@@ -4,20 +4,6 @@
  * per-species costume incompatibilities.
  */
 
-import { SPECIES, SEX_OPTIONS, JOBS, COSTUME_CATEGORIES } from './data.js';
-
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
-
-/**
- * @typedef {Object} CharacterState
- * @property {string}      speciesId
- * @property {string}      sexId
- * @property {string}      jobId
- * @property {Set<string>} selectedCostumes - Set of CostumeItem IDs
- */
-
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -41,7 +27,7 @@ function resolveTagsSpec(spec, sex) {
  * @param {string} speciesId
  * @returns {Set<string>}
  */
-export function getIncompatibleCostumes(speciesId) {
+function getIncompatibleCostumes(speciesId) {
   const species = SPECIES.find((s) => s.id === speciesId);
   return new Set(species?.incompatibleCostumes ?? []);
 }
@@ -53,7 +39,7 @@ export function getIncompatibleCostumes(speciesId) {
  * @param {CharacterState} state
  * @returns {string}
  */
-export function generateTags(state) {
+function generateTags(state) {
   const tags = [];
 
   // 1. Sex tag (e.g. "1girl")
