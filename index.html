@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fantasy Character Tag Generator</title>
+
+  <!-- Google Fonts: Cinzel (headings) + Inter (body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="app">
+
+    <!-- ------------------------------------------------------------------ -->
+    <!-- Header                                                               -->
+    <!-- ------------------------------------------------------------------ -->
+    <header class="app-header">
+      <h1 class="app-title">Fantasy Character Tag Generator</h1>
+      <p class="app-subtitle">Build booru-style tags for AI image generation</p>
+    </header>
+
+    <!-- ------------------------------------------------------------------ -->
+    <!-- Main content: two-column layout                                      -->
+    <!-- ------------------------------------------------------------------ -->
+    <main class="app-main">
+
+      <!-- Left column: Character Builder -->
+      <section class="panel panel--controls" aria-label="Character Builder">
+        <div class="panel-header">
+          <h2 class="panel-title">Character Builder</h2>
+        </div>
+
+        <div class="panel-body">
+          <!-- Core selectors -->
+          <div class="form-grid">
+
+            <!-- Species -->
+            <div class="form-group">
+              <label class="form-label" for="species-select">Species</label>
+              <select class="form-select" id="species-select"></select>
+            </div>
+
+            <!-- Sex -->
+            <div class="form-group">
+              <span class="form-label" id="sex-label">Sex</span>
+              <div
+                class="radio-group"
+                id="sex-group"
+                role="radiogroup"
+                aria-labelledby="sex-label"
+              ></div>
+            </div>
+
+            <!-- Job / Class -->
+            <div class="form-group form-group--full">
+              <label class="form-label" for="job-select">Job / Class</label>
+              <select class="form-select" id="job-select"></select>
+            </div>
+
+          </div><!-- /.form-grid -->
+
+          <!-- Costume & Equipment -->
+          <div class="form-section">
+            <h3 class="form-section-title">Costume &amp; Equipment</h3>
+            <div id="costume-container" class="costume-grid"></div>
+          </div>
+
+        </div><!-- /.panel-body -->
+      </section><!-- /.panel--controls -->
+
+      <!-- Right column: Output -->
+      <section class="panel panel--output" aria-label="Tag Output">
+        <div class="panel-header">
+          <h2 class="panel-title">Generated Tags</h2>
+        </div>
+
+        <div class="panel-body">
+
+          <!-- Tag textarea + copy button -->
+          <div class="output-area">
+            <textarea
+              id="tag-output"
+              class="tag-output"
+              readonly
+              aria-label="Generated booru-style tags"
+              placeholder="Select character options to generate tags…"
+            ></textarea>
+            <button
+              class="btn btn--secondary btn--copy"
+              id="copy-btn"
+              aria-label="Copy tags to clipboard"
+            >Copy</button>
+          </div>
+
+          <!-- Copy confirmation -->
+          <div id="copy-feedback" class="copy-feedback" aria-live="polite"></div>
+
+          <!-- Random Character -->
+          <div class="random-section">
+            <button class="btn btn--primary btn--random" id="random-btn">
+              <span class="btn-icon" aria-hidden="true">🎲</span>
+              Random Character
+            </button>
+            <p class="random-hint">
+              Generates a weighted-random character with a cohesive outfit
+            </p>
+          </div>
+
+          <!-- Character summary -->
+          <div class="character-summary" aria-label="Character Summary">
+            <h3 class="summary-title">Character Summary</h3>
+            <ul class="summary-list" id="summary-list" aria-live="polite"></ul>
+          </div>
+
+        </div><!-- /.panel-body -->
+      </section><!-- /.panel--output -->
+
+    </main>
+
+    <!-- ------------------------------------------------------------------ -->
+    <!-- Footer                                                               -->
+    <!-- ------------------------------------------------------------------ -->
+    <footer class="app-footer">
+      <p>Fantasy Character Tag Generator &mdash; A vibe-coded portfolio project</p>
+    </footer>
+
+  </div><!-- /.app -->
+
+  <!-- ES module entry point -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
