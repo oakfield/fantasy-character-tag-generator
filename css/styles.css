@@ -229,7 +229,7 @@ body {
   font-family: var(--font-body);
   font-size: 0.9rem;
   padding: var(--sp-2) var(--sp-8) var(--sp-2) var(--sp-3);
-  cursor: pointer;
+  cursor: default;
   transition: border-color var(--transition), box-shadow var(--transition);
 }
 
@@ -263,7 +263,7 @@ body {
   border: 1px solid var(--clr-border);
   border-radius: var(--radius-md);
   font-size: 0.875rem;
-  cursor: pointer;
+  cursor: default;
   transition: background var(--transition), border-color var(--transition), color var(--transition);
   user-select: none;
 }
@@ -392,7 +392,7 @@ body {
   border: 1px solid var(--clr-border);
   border-radius: var(--radius-pill);
   font-size: 0.8rem;
-  cursor: pointer;
+  cursor: default;
   user-select: none;
   transition: background var(--transition), border-color var(--transition),
               color var(--transition), opacity var(--transition);
@@ -553,7 +553,7 @@ body {
   gap: var(--sp-2);
   border: none;
   border-radius: var(--radius-md);
-  cursor: pointer;
+  cursor: default;
   font-family: var(--font-body);
   font-weight: 600;
   letter-spacing: 0.03em;
