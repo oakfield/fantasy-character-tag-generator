@@ -327,12 +327,17 @@ const SKIN_COLORS = [
 // ---------------------------------------------------------------------------
 
 /**
- * Maps a costume item ID to the list of item IDs of which at least one must
- * be selected for that item to be available.
- * @type {Record<string, string[]>}
+ * Maps a costume item ID to its prerequisite rule.
+ * `prereqs`  – at least one of these item IDs must be selected.
+ * `tooltip`  – optional override for the disabled-state tooltip; falls back
+ *              to a generated "Requires: X, Y, Z" string if omitted.
+ * @type {Record<string, { prereqs: string[], tooltip?: string }>}
  */
 const COSTUME_PREREQUISITES = {
-  hood: ['robe', 'cloak', 'cape'],
+  hood: {
+    prereqs: ['robe', 'cloak', 'cape'],
+    tooltip: 'To add a hood, select Robe, Cloak or Cape',
+  },
 };
 
 /**

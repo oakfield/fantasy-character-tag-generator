@@ -28,9 +28,9 @@ function resolveTagsSpec(spec, sex) {
  * @param {Set<string>} selectedCostumes - Modified in place
  */
 function enforcePrerequisites(selectedCostumes) {
-  for (const [itemId, prereqs] of Object.entries(COSTUME_PREREQUISITES)) {
+  for (const [itemId, rule] of Object.entries(COSTUME_PREREQUISITES)) {
     if (selectedCostumes.has(itemId)) {
-      const prereqMet = prereqs.some((p) => selectedCostumes.has(p));
+      const prereqMet = rule.prereqs.some((p) => selectedCostumes.has(p));
       if (!prereqMet) selectedCostumes.delete(itemId);
     }
   }

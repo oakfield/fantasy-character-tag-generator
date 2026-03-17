@@ -104,21 +104,24 @@ function renderCostumes() {
     const items = cat.items.map((item) => {
       const isIncompatible = incompatible.has(item.id);
 
-      const prereqs = COSTUME_PREREQUISITES[item.id];
-      const isPrereqUnmet = prereqs
-        ? !prereqs.some((p) => state.selectedCostumes.has(p))
+      const prereqRule = COSTUME_PREREQUISITES[item.id];
+      const isPrereqUnmet = prereqRule
+        ? !prereqRule.prereqs.some((p) => state.selectedCostumes.has(p))
         : false;
 
       const isDisabled = isIncompatible || isPrereqUnmet;
       const isChecked  = state.selectedCostumes.has(item.id) && !isDisabled;
 
       let title = '';
-      if (isIncompatible) title = 'Not compatible with this species';
-      else if (isPrereqUnmet) {
-        const prereqLabels = prereqs
-          .map((p) => COSTUME_CATEGORIES.flatMap((c) => c.items).find((i) => i.id === p)?.label ?? p)
-          .join(', ');
-        title = `Requires: ${prereqLabels}`;
+      if (isIncompatible) {
+        title = 'Not compatible with this species';
+      } else if (isPrereqUnmet) {
+        title = prereqRule.tooltip ?? (() => {
+          const labels = prereqRule.prereqs
+            .map((p) => COSTUME_CATEGORIES.flatMap((c) => c.items).find((i) => i.id === p)?.label ?? p)
+            .join(', ');
+          return `Requires: ${labels}`;
+        })();
       }
 
       const classes = [
