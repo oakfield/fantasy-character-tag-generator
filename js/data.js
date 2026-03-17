@@ -44,6 +44,7 @@ const SPECIES = [
     tags: ['dark elf', 'pointy ears', 'dark skin', 'white hair'],
     weight: 8,
     incompatibleCostumes: [],
+    impliedColors: { hair: true, skin: true },
   },
   {
     id: 'high_elf',
@@ -51,6 +52,7 @@ const SPECIES = [
     tags: ['high elf', 'pointy ears', 'blonde hair'],
     weight: 5,
     incompatibleCostumes: [],
+    impliedColors: { hair: true },
   },
   {
     id: 'half_elf',
@@ -65,6 +67,7 @@ const SPECIES = [
     tags: ['orc', 'green skin', 'tusks'],
     weight: 6,
     incompatibleCostumes: [],
+    impliedColors: { skin: true },
   },
   {
     id: 'half_orc',
@@ -72,6 +75,7 @@ const SPECIES = [
     tags: ['half-orc', 'gray skin', 'small tusks'],
     weight: 4,
     incompatibleCostumes: [],
+    impliedColors: { skin: true },
   },
   {
     id: 'goblin',
@@ -79,6 +83,7 @@ const SPECIES = [
     tags: ['goblin', 'green skin', 'pointy ears'],
     weight: 7,
     incompatibleCostumes: [],
+    impliedColors: { skin: true },
   },
   {
     id: 'tiefling',
@@ -94,6 +99,7 @@ const SPECIES = [
     tags: ['vampire', 'fangs', 'pale skin', 'red eyes'],
     weight: 6,
     incompatibleCostumes: [],
+    impliedColors: { skin: true, eyes: true },
   },
   {
     id: 'slime',
