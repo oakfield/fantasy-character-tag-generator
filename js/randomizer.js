@@ -113,13 +113,22 @@ function generateRandomCharacter() {
   const eyeColor  = implied.eyes ? { id: '' } : weightedRandom(EYE_COLORS.filter((c) => c.weight > 0));
   const skinColor = implied.skin ? { id: '' } : weightedRandom(SKIN_COLORS.filter((c) => c.weight > 0));
 
+  // Pick camera & framing — "Any" (id: '') is included in the pool with a high
+  // weight, so framing will be left unspecified most of the time.
+  const shotType    = weightedRandom(SHOT_TYPES);
+  const cameraAngle = weightedRandom(CAMERA_ANGLES);
+  const gaze        = weightedRandom(GAZE_OPTIONS);
+
   return {
-    speciesId:   species.id,
-    sexId:       sex.id,
-    jobId:       job.id,
-    hairColorId: hairColor.id,
-    eyeColorId:  eyeColor.id,
-    skinColorId: skinColor.id,
+    speciesId:     species.id,
+    sexId:         sex.id,
+    jobId:         job.id,
+    hairColorId:   hairColor.id,
+    eyeColorId:    eyeColor.id,
+    skinColorId:   skinColor.id,
+    shotTypeId:    shotType.id,
+    cameraAngleId: cameraAngle.id,
+    gazeId:        gaze.id,
     selectedCostumes,
   };
 }

@@ -10,21 +10,27 @@
 
 /** @type {import('./generator.js').CharacterState} */
 const RESET_STATE = {
-  speciesId: 'human',
-  sexId: 'female',
-  jobId: '',
-  hairColorId: '',
-  eyeColorId: '',
-  skinColorId: '',
+  speciesId:     'human',
+  sexId:         'female',
+  jobId:         '',
+  hairColorId:   '',
+  eyeColorId:    '',
+  skinColorId:   '',
+  shotTypeId:    '',
+  cameraAngleId: '',
+  gazeId:        '',
 };
 
 const state = {
-  speciesId: RESET_STATE.speciesId,
-  sexId: RESET_STATE.sexId,
-  jobId: RESET_STATE.jobId,
-  hairColorId: RESET_STATE.hairColorId,
-  eyeColorId: RESET_STATE.eyeColorId,
-  skinColorId: RESET_STATE.skinColorId,
+  speciesId:     RESET_STATE.speciesId,
+  sexId:         RESET_STATE.sexId,
+  jobId:         RESET_STATE.jobId,
+  hairColorId:   RESET_STATE.hairColorId,
+  eyeColorId:    RESET_STATE.eyeColorId,
+  skinColorId:   RESET_STATE.skinColorId,
+  shotTypeId:    RESET_STATE.shotTypeId,
+  cameraAngleId: RESET_STATE.cameraAngleId,
+  gazeId:        RESET_STATE.gazeId,
   selectedCostumes: new Set(),
 };
 
@@ -80,6 +86,13 @@ function renderColorSelects() {
   $('hair-color-select').innerHTML = colorSelectHTML(state.hairColorId, HAIR_COLORS);
   $('eye-color-select').innerHTML  = colorSelectHTML(state.eyeColorId,  EYE_COLORS);
   $('skin-color-select').innerHTML = colorSelectHTML(state.skinColorId, SKIN_COLORS);
+}
+
+/** Populate all three camera & framing <select> elements. */
+function renderFramingSelects() {
+  $('shot-type-select').innerHTML    = colorSelectHTML(state.shotTypeId,    SHOT_TYPES);
+  $('camera-angle-select').innerHTML = colorSelectHTML(state.cameraAngleId, CAMERA_ANGLES);
+  $('gaze-select').innerHTML         = colorSelectHTML(state.gazeId,        GAZE_OPTIONS);
 }
 
 /** Populate the job <select>. */
@@ -172,9 +185,12 @@ function renderSummary() {
     (item) => state.selectedCostumes.has(item.id) && !incompatible.has(item.id)
   );
 
-  const hairColor = HAIR_COLORS.find((c) => c.id === state.hairColorId);
-  const eyeColor  = EYE_COLORS.find((c) => c.id === state.eyeColorId);
-  const skinColor = SKIN_COLORS.find((c) => c.id === state.skinColorId);
+  const hairColor   = HAIR_COLORS.find((c) => c.id === state.hairColorId);
+  const eyeColor    = EYE_COLORS.find((c) => c.id === state.eyeColorId);
+  const skinColor   = SKIN_COLORS.find((c) => c.id === state.skinColorId);
+  const shotType    = SHOT_TYPES.find((o) => o.id === state.shotTypeId);
+  const cameraAngle = CAMERA_ANGLES.find((o) => o.id === state.cameraAngleId);
+  const gaze        = GAZE_OPTIONS.find((o) => o.id === state.gazeId);
 
   const list = $('summary-list');
   list.innerHTML = [
@@ -187,6 +203,9 @@ function renderSummary() {
     `<li><span class="summary-key">Equipment</span><span class="summary-val">${
       activeItems.length ? activeItems.map((i) => i.label).join(', ') : 'None'
     }</span></li>`,
+    `<li><span class="summary-key">Shot</span><span class="summary-val">${shotType?.label    || '—'}</span></li>`,
+    `<li><span class="summary-key">Angle</span><span class="summary-val">${cameraAngle?.label || '—'}</span></li>`,
+    `<li><span class="summary-key">Gaze</span><span class="summary-val">${gaze?.label        || '—'}</span></li>`,
   ].join('');
 }
 
@@ -220,9 +239,12 @@ function applyState(newState) {
   state.speciesId   = newState.speciesId;
   state.sexId       = newState.sexId;
   state.jobId       = newState.jobId;
-  state.hairColorId = newState.hairColorId ?? '';
-  state.eyeColorId  = newState.eyeColorId  ?? '';
-  state.skinColorId = newState.skinColorId ?? '';
+  state.hairColorId   = newState.hairColorId   ?? '';
+  state.eyeColorId    = newState.eyeColorId    ?? '';
+  state.skinColorId   = newState.skinColorId   ?? '';
+  state.shotTypeId    = newState.shotTypeId    ?? '';
+  state.cameraAngleId = newState.cameraAngleId ?? '';
+  state.gazeId        = newState.gazeId        ?? '';
   state.selectedCostumes = new Set(newState.selectedCostumes);
 
   // Re-render controls that hold their own DOM state
@@ -230,6 +252,7 @@ function applyState(newState) {
   $('job-select').value     = state.jobId;
   renderSexRadios();
   renderColorSelects();
+  renderFramingSelects();
   renderAll();
 }
 
@@ -318,6 +341,23 @@ function bindEvents() {
     renderSummary();
   });
 
+  // Camera & framing
+  $('shot-type-select').addEventListener('change', (e) => {
+    state.shotTypeId = /** @type {HTMLSelectElement} */ (e.target).value;
+    renderOutput();
+    renderSummary();
+  });
+  $('camera-angle-select').addEventListener('change', (e) => {
+    state.cameraAngleId = /** @type {HTMLSelectElement} */ (e.target).value;
+    renderOutput();
+    renderSummary();
+  });
+  $('gaze-select').addEventListener('change', (e) => {
+    state.gazeId = /** @type {HTMLSelectElement} */ (e.target).value;
+    renderOutput();
+    renderSummary();
+  });
+
   // Random button
   $('random-btn').addEventListener('click', () => {
     applyState(generateRandomCharacter());
@@ -371,6 +411,7 @@ function init() {
   renderSpeciesSelect();
   renderSexRadios();
   renderColorSelects();
+  renderFramingSelects();
   renderJobSelect();
   renderAll();
   bindEvents();
