@@ -327,6 +327,15 @@ const SKIN_COLORS = [
 // ---------------------------------------------------------------------------
 
 /**
+ * Maps a costume item ID to the list of item IDs of which at least one must
+ * be selected for that item to be available.
+ * @type {Record<string, string[]>}
+ */
+const COSTUME_PREREQUISITES = {
+  hood: ['robe', 'cloak', 'cape'],
+};
+
+/**
  * Groups of costume item IDs where only one may be selected at a time.
  * Selecting a new item in a group automatically deselects the others.
  * @type {string[][]}

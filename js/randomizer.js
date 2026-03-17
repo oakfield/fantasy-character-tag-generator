@@ -103,6 +103,8 @@ function generateRandomCharacter() {
 
   // Remove any accidental conflicts (e.g. two headwear items from overlapping presets)
   enforceExclusionGroups(selectedCostumes);
+  // Remove items whose prerequisites weren't included in this outfit
+  enforcePrerequisites(selectedCostumes);
 
   // Pick appearance colors, but skip any attribute already defined by the species
   // (e.g. dark elf implies white hair + dark skin, vampire implies red eyes + pale skin)

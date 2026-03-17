@@ -93,7 +93,8 @@ function renderJobSelect() {
 
 /**
  * Render costume checkboxes grouped by category.
- * Items incompatible with the current species are disabled and marked visually.
+ * Items incompatible with the current species, or whose prerequisites are
+ * unmet, are disabled and marked visually with a descriptive tooltip.
  */
 function renderCostumes() {
   const incompatible = getIncompatibleCostumes(state.speciesId);
@@ -102,23 +103,40 @@ function renderCostumes() {
   container.innerHTML = COSTUME_CATEGORIES.map((cat) => {
     const items = cat.items.map((item) => {
       const isIncompatible = incompatible.has(item.id);
-      const isChecked = state.selectedCostumes.has(item.id) && !isIncompatible;
+
+      const prereqs = COSTUME_PREREQUISITES[item.id];
+      const isPrereqUnmet = prereqs
+        ? !prereqs.some((p) => state.selectedCostumes.has(p))
+        : false;
+
+      const isDisabled = isIncompatible || isPrereqUnmet;
+      const isChecked  = state.selectedCostumes.has(item.id) && !isDisabled;
+
+      let title = '';
+      if (isIncompatible) title = 'Not compatible with this species';
+      else if (isPrereqUnmet) {
+        const prereqLabels = prereqs
+          .map((p) => COSTUME_CATEGORIES.flatMap((c) => c.items).find((i) => i.id === p)?.label ?? p)
+          .join(', ');
+        title = `Requires: ${prereqLabels}`;
+      }
+
       const classes = [
         'costume-chip',
-        isChecked ? 'costume-chip--active' : '',
-        isIncompatible ? 'costume-chip--disabled' : '',
+        isChecked   ? 'costume-chip--active'   : '',
+        isDisabled  ? 'costume-chip--disabled'  : '',
       ]
         .filter(Boolean)
         .join(' ');
 
       return `
-        <label class="${classes}" title="${isIncompatible ? 'Not compatible with this species' : ''}">
+        <label class="${classes}"${title ? ` title="${title}"` : ''}>
           <input
             type="checkbox"
             class="costume-checkbox"
             data-item-id="${item.id}"
-            ${isChecked ? 'checked' : ''}
-            ${isIncompatible ? 'disabled' : ''}
+            ${isChecked  ? 'checked'  : ''}
+            ${isDisabled ? 'disabled' : ''}
           />
           ${item.label}
         </label>`;
@@ -220,9 +238,10 @@ function bindEvents() {
   // Species
   $('species-select').addEventListener('change', (e) => {
     state.speciesId = /** @type {HTMLSelectElement} */ (e.target).value;
-    // Remove any now-incompatible costumes from selection
+    // Remove incompatible costumes, then re-check prerequisites
     const incompatible = getIncompatibleCostumes(state.speciesId);
     for (const id of incompatible) state.selectedCostumes.delete(id);
+    enforcePrerequisites(state.selectedCostumes);
     renderAll();
   });
 
@@ -286,6 +305,8 @@ function bindEvents() {
       }
     } else {
       state.selectedCostumes.delete(id);
+      // If this item was a prerequisite for another selected item, remove that item too
+      enforcePrerequisites(state.selectedCostumes);
     }
 
     // Re-render costumes so deselected chips update visually

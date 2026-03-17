@@ -23,6 +23,20 @@ function resolveTagsSpec(spec, sex) {
 // ---------------------------------------------------------------------------
 
 /**
+ * Remove any costume items whose prerequisites are no longer satisfied.
+ * Used by the randomizer and the species-change handler.
+ * @param {Set<string>} selectedCostumes - Modified in place
+ */
+function enforcePrerequisites(selectedCostumes) {
+  for (const [itemId, prereqs] of Object.entries(COSTUME_PREREQUISITES)) {
+    if (selectedCostumes.has(itemId)) {
+      const prereqMet = prereqs.some((p) => selectedCostumes.has(p));
+      if (!prereqMet) selectedCostumes.delete(itemId);
+    }
+  }
+}
+
+/**
  * Enforce mutual exclusion groups on a selectedCostumes Set in-place.
  * When multiple items from the same group are present, only the first one
  * (in group-definition order) is kept. This is used by the randomizer to
