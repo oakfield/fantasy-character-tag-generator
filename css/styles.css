@@ -319,6 +319,49 @@ body {
   margin-bottom: var(--sp-4);
 }
 
+/* Collapsible sections using <details>/<summary> */
+.form-section--collapsible {
+  /* <details> is a block element; give it the same spacing as .form-section */
+}
+
+.form-section--collapsible > summary.form-section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  list-style: none; /* remove default browser triangle */
+  user-select: none;
+  margin-bottom: 0;
+  padding-bottom: var(--sp-4);
+  transition: color var(--transition);
+}
+
+/* Hide the default WebKit disclosure arrow */
+.form-section--collapsible > summary.form-section-title::-webkit-details-marker {
+  display: none;
+}
+
+/* Chevron icon via pseudo-element */
+.form-section--collapsible > summary.form-section-title::after {
+  content: '▾';
+  font-size: 0.9rem;
+  color: var(--clr-text-dim);
+  transition: transform var(--transition), color var(--transition);
+  margin-left: var(--sp-2);
+}
+
+.form-section--collapsible:not([open]) > summary.form-section-title::after {
+  transform: rotate(-90deg);
+}
+
+.form-section--collapsible > summary.form-section-title:hover {
+  color: var(--clr-gold);
+}
+
+.form-section--collapsible > summary.form-section-title:hover::after {
+  color: var(--clr-gold);
+}
+
 .costume-grid {
   display: flex;
   flex-direction: column;
