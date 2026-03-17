@@ -256,6 +256,70 @@ const JOBS = [
  * @property {CostumeItem[]} items
  */
 
+// ---------------------------------------------------------------------------
+// Appearance colors
+// ---------------------------------------------------------------------------
+
+/**
+ * @typedef {{ id: string, label: string, tag: string, weight: number }} ColorOption
+ * weight: 0 means "Any" — excluded from weighted-random selection.
+ */
+
+/** @type {ColorOption[]} */
+const HAIR_COLORS = [
+  { id: '',         label: '— Any —',   tag: '',                     weight: 0  },
+  { id: 'black',    label: 'Black',     tag: 'black hair',           weight: 15 },
+  { id: 'brown',    label: 'Brown',     tag: 'brown hair',           weight: 14 },
+  { id: 'blonde',   label: 'Blonde',    tag: 'blonde hair',          weight: 12 },
+  { id: 'red',      label: 'Red',       tag: 'red hair',             weight: 10 },
+  { id: 'auburn',   label: 'Auburn',    tag: 'auburn hair',          weight: 7  },
+  { id: 'white',    label: 'White',     tag: 'white hair',           weight: 7  },
+  { id: 'silver',   label: 'Silver',    tag: 'silver hair',          weight: 6  },
+  { id: 'gray',     label: 'Gray',      tag: 'gray hair',            weight: 4  },
+  { id: 'platinum', label: 'Platinum',  tag: 'platinum blonde hair', weight: 3  },
+  { id: 'blue',     label: 'Blue',      tag: 'blue hair',            weight: 5  },
+  { id: 'purple',   label: 'Purple',    tag: 'purple hair',          weight: 5  },
+  { id: 'pink',     label: 'Pink',      tag: 'pink hair',            weight: 4  },
+  { id: 'green',    label: 'Green',     tag: 'green hair',           weight: 3  },
+  { id: 'orange',   label: 'Orange',    tag: 'orange hair',          weight: 3  },
+];
+
+/** @type {ColorOption[]} */
+const EYE_COLORS = [
+  { id: '',          label: '— Any —',      tag: '',              weight: 0  },
+  { id: 'brown',     label: 'Brown',        tag: 'brown eyes',    weight: 15 },
+  { id: 'blue',      label: 'Blue',         tag: 'blue eyes',     weight: 14 },
+  { id: 'green',     label: 'Green',        tag: 'green eyes',    weight: 12 },
+  { id: 'hazel',     label: 'Hazel',        tag: 'hazel eyes',    weight: 8  },
+  { id: 'gray',      label: 'Gray',         tag: 'gray eyes',     weight: 7  },
+  { id: 'amber',     label: 'Amber',        tag: 'amber eyes',    weight: 7  },
+  { id: 'red',       label: 'Red',          tag: 'red eyes',      weight: 6  },
+  { id: 'purple',    label: 'Purple',       tag: 'purple eyes',   weight: 5  },
+  { id: 'gold',      label: 'Gold',         tag: 'gold eyes',     weight: 5  },
+  { id: 'silver',    label: 'Silver',       tag: 'silver eyes',   weight: 4  },
+  { id: 'black',     label: 'Black',        tag: 'black eyes',    weight: 3  },
+  { id: 'heterochromia', label: 'Heterochromia', tag: 'heterochromia', weight: 2 },
+];
+
+/** @type {ColorOption[]} */
+const SKIN_COLORS = [
+  { id: '',       label: '— Any —', tag: '',            weight: 0  },
+  { id: 'pale',   label: 'Pale',    tag: 'pale skin',   weight: 12 },
+  { id: 'fair',   label: 'Fair',    tag: 'fair skin',   weight: 14 },
+  { id: 'light',  label: 'Light',   tag: 'light skin',  weight: 12 },
+  { id: 'tan',    label: 'Tan',     tag: 'tan skin',    weight: 11 },
+  { id: 'brown',  label: 'Brown',   tag: 'brown skin',  weight: 9  },
+  { id: 'dark',   label: 'Dark',    tag: 'dark skin',   weight: 8  },
+  { id: 'ebony',  label: 'Ebony',   tag: 'dark skin',   weight: 5  },
+  { id: 'green',  label: 'Green',   tag: 'green skin',  weight: 4  },
+  { id: 'gray',   label: 'Gray',    tag: 'gray skin',   weight: 4  },
+  { id: 'blue',   label: 'Blue',    tag: 'blue skin',   weight: 3  },
+  { id: 'purple', label: 'Purple',  tag: 'purple skin', weight: 3  },
+  { id: 'golden', label: 'Golden',  tag: 'golden skin', weight: 3  },
+];
+
+// ---------------------------------------------------------------------------
+
 /**
  * Groups of costume item IDs where only one may be selected at a time.
  * Selecting a new item in a group automatically deselects the others.

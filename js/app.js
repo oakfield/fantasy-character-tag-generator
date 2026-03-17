@@ -9,12 +9,22 @@
 // ---------------------------------------------------------------------------
 
 /** @type {import('./generator.js').CharacterState} */
-const RESET_STATE = { speciesId: 'human', sexId: 'female', jobId: '' };
+const RESET_STATE = {
+  speciesId: 'human',
+  sexId: 'female',
+  jobId: '',
+  hairColorId: '',
+  eyeColorId: '',
+  skinColorId: '',
+};
 
 const state = {
   speciesId: RESET_STATE.speciesId,
   sexId: RESET_STATE.sexId,
   jobId: RESET_STATE.jobId,
+  hairColorId: RESET_STATE.hairColorId,
+  eyeColorId: RESET_STATE.eyeColorId,
+  skinColorId: RESET_STATE.skinColorId,
   selectedCostumes: new Set(),
 };
 
@@ -51,6 +61,25 @@ function renderSexRadios() {
       ${s.label}
     </label>`
   ).join('');
+}
+
+/**
+ * Build the innerHTML for a color <select> from a ColorOption array.
+ * @param {string} selectedId
+ * @param {Array<{id:string,label:string}>} options
+ * @returns {string}
+ */
+function colorSelectHTML(selectedId, options) {
+  return options
+    .map((c) => `<option value="${c.id}"${c.id === selectedId ? ' selected' : ''}>${c.label}</option>`)
+    .join('');
+}
+
+/** Populate all three appearance color <select> elements. */
+function renderColorSelects() {
+  $('hair-color-select').innerHTML = colorSelectHTML(state.hairColorId, HAIR_COLORS);
+  $('eye-color-select').innerHTML  = colorSelectHTML(state.eyeColorId,  EYE_COLORS);
+  $('skin-color-select').innerHTML = colorSelectHTML(state.skinColorId, SKIN_COLORS);
 }
 
 /** Populate the job <select>. */
@@ -122,10 +151,17 @@ function renderSummary() {
     (item) => state.selectedCostumes.has(item.id) && !incompatible.has(item.id)
   );
 
+  const hairColor = HAIR_COLORS.find((c) => c.id === state.hairColorId);
+  const eyeColor  = EYE_COLORS.find((c) => c.id === state.eyeColorId);
+  const skinColor = SKIN_COLORS.find((c) => c.id === state.skinColorId);
+
   const list = $('summary-list');
   list.innerHTML = [
     `<li><span class="summary-key">Species</span><span class="summary-val">${species?.label ?? '—'}</span></li>`,
     `<li><span class="summary-key">Sex</span><span class="summary-val">${sex?.label ?? '—'}</span></li>`,
+    `<li><span class="summary-key">Hair</span><span class="summary-val">${hairColor?.label || '—'}</span></li>`,
+    `<li><span class="summary-key">Eyes</span><span class="summary-val">${eyeColor?.label || '—'}</span></li>`,
+    `<li><span class="summary-key">Skin</span><span class="summary-val">${skinColor?.label || '—'}</span></li>`,
     `<li><span class="summary-key">Job</span><span class="summary-val">${job?.label ?? '—'}</span></li>`,
     `<li><span class="summary-key">Equipment</span><span class="summary-val">${
       activeItems.length ? activeItems.map((i) => i.label).join(', ') : 'None'
@@ -160,15 +196,19 @@ function resetState() {
  * @param {import('./generator.js').CharacterState} newState
  */
 function applyState(newState) {
-  state.speciesId = newState.speciesId;
-  state.sexId     = newState.sexId;
-  state.jobId     = newState.jobId;
+  state.speciesId   = newState.speciesId;
+  state.sexId       = newState.sexId;
+  state.jobId       = newState.jobId;
+  state.hairColorId = newState.hairColorId ?? '';
+  state.eyeColorId  = newState.eyeColorId  ?? '';
+  state.skinColorId = newState.skinColorId ?? '';
   state.selectedCostumes = new Set(newState.selectedCostumes);
 
   // Re-render controls that hold their own DOM state
   $('species-select').value = state.speciesId;
   $('job-select').value     = state.jobId;
   renderSexRadios();
+  renderColorSelects();
   renderAll();
 }
 
@@ -199,6 +239,23 @@ function bindEvents() {
       renderOutput();
       renderSummary();
     }
+  });
+
+  // Appearance colors
+  $('hair-color-select').addEventListener('change', (e) => {
+    state.hairColorId = /** @type {HTMLSelectElement} */ (e.target).value;
+    renderOutput();
+    renderSummary();
+  });
+  $('eye-color-select').addEventListener('change', (e) => {
+    state.eyeColorId = /** @type {HTMLSelectElement} */ (e.target).value;
+    renderOutput();
+    renderSummary();
+  });
+  $('skin-color-select').addEventListener('change', (e) => {
+    state.skinColorId = /** @type {HTMLSelectElement} */ (e.target).value;
+    renderOutput();
+    renderSummary();
   });
 
   // Job
@@ -289,6 +346,7 @@ function showCopyFeedback() {
 function init() {
   renderSpeciesSelect();
   renderSexRadios();
+  renderColorSelects();
   renderJobSelect();
   renderAll();
   bindEvents();

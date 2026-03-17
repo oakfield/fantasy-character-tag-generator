@@ -288,6 +288,21 @@ body {
 }
 
 /* --------------------------------------------------------------------------
+   Appearance grid (Hair / Eye / Skin color selects)
+   -------------------------------------------------------------------------- */
+.appearance-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-4);
+}
+
+@media (max-width: 600px) {
+  .appearance-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --------------------------------------------------------------------------
    Costume section
    -------------------------------------------------------------------------- */
 .form-section {

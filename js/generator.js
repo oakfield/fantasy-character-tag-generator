@@ -75,11 +75,21 @@ function generateTags(state) {
     tags.push(...resolveTagsSpec(species.tags, state.sexId));
   }
 
-  // 3. Job tags
+  // 3. Appearance color tags (only when explicitly selected)
+  const hairColor = HAIR_COLORS.find((c) => c.id === state.hairColorId);
+  if (hairColor?.tag) tags.push(hairColor.tag);
+
+  const eyeColor = EYE_COLORS.find((c) => c.id === state.eyeColorId);
+  if (eyeColor?.tag) tags.push(eyeColor.tag);
+
+  const skinColor = SKIN_COLORS.find((c) => c.id === state.skinColorId);
+  if (skinColor?.tag) tags.push(skinColor.tag);
+
+  // 4. Job tags
   const job = JOBS.find((j) => j.id === state.jobId);
   if (job) tags.push(...job.tags);
 
-  // 4. Costume tags, filtered by species incompatibilities
+  // 5. Costume tags, filtered by species incompatibilities
   const incompatible = getIncompatibleCostumes(state.speciesId);
   for (const category of COSTUME_CATEGORIES) {
     for (const item of category.items) {

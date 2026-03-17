@@ -104,10 +104,18 @@ function generateRandomCharacter() {
   // Remove any accidental conflicts (e.g. two headwear items from overlapping presets)
   enforceExclusionGroups(selectedCostumes);
 
+  // Pick appearance colors — exclude the "Any" placeholder (weight: 0)
+  const hairColor = weightedRandom(HAIR_COLORS.filter((c) => c.weight > 0));
+  const eyeColor  = weightedRandom(EYE_COLORS.filter((c) => c.weight > 0));
+  const skinColor = weightedRandom(SKIN_COLORS.filter((c) => c.weight > 0));
+
   return {
-    speciesId: species.id,
-    sexId: sex.id,
-    jobId: job.id,
+    speciesId:   species.id,
+    sexId:       sex.id,
+    jobId:       job.id,
+    hairColorId: hairColor.id,
+    eyeColorId:  eyeColor.id,
+    skinColorId: skinColor.id,
     selectedCostumes,
   };
 }
