@@ -449,3 +449,46 @@ const COSTUME_CATEGORIES = [
     ],
   },
 ];
+
+// ---------------------------------------------------------------------------
+// Camera & Framing
+// ---------------------------------------------------------------------------
+
+/**
+ * @typedef {{ id: string, label: string, tag: string, weight: number }} FramingOption
+ *
+ * Unlike color options (where weight:0 excludes "Any" from random selection),
+ * framing options include "Any" in the weighted pool with a high weight so
+ * that the randomizer leaves framing unspecified most of the time.
+ */
+
+/** @type {FramingOption[]} */
+const SHOT_TYPES = [
+  { id: '',            label: '— Any —',      tag: '',            weight: 70 },
+  { id: 'portrait',    label: 'Portrait',      tag: 'portrait',    weight: 5  },
+  { id: 'bust',        label: 'Bust Shot',     tag: 'bust',        weight: 8  },
+  { id: 'upper_body',  label: 'Upper Body',    tag: 'upper body',  weight: 10 },
+  { id: 'cowboy_shot', label: 'Cowboy Shot',   tag: 'cowboy shot', weight: 8  },
+  { id: 'full_body',   label: 'Full Body',     tag: 'full body',   weight: 12 },
+  { id: 'wide_shot',   label: 'Wide Shot',     tag: 'wide shot',   weight: 5  },
+];
+
+/** @type {FramingOption[]} */
+const CAMERA_ANGLES = [
+  { id: '',             label: '— Any —',        tag: '',            weight: 75 },
+  { id: 'profile',      label: 'Profile / Side',  tag: 'profile',     weight: 5  },
+  { id: 'from_behind',  label: 'From Behind',     tag: 'from behind', weight: 6  },
+  { id: 'from_above',   label: 'From Above',      tag: 'from above',  weight: 5  },
+  { id: 'from_below',   label: 'From Below',      tag: 'from below',  weight: 4  },
+  { id: 'dutch_angle',  label: 'Dutch Angle',     tag: 'dutch angle', weight: 5  },
+];
+
+/** @type {FramingOption[]} */
+const GAZE_OPTIONS = [
+  { id: '',                   label: '— Any —',          tag: '',                  weight: 60 },
+  { id: 'looking_at_viewer',  label: 'Looking at Viewer', tag: 'looking at viewer', weight: 20 },
+  { id: 'looking_away',       label: 'Looking Away',      tag: 'looking away',      weight: 8  },
+  { id: 'looking_back',       label: 'Looking Back',      tag: 'looking back',      weight: 5  },
+  { id: 'eyes_closed',        label: 'Eyes Closed',       tag: 'closed eyes',       weight: 4  },
+  { id: 'winking',            label: 'Winking',           tag: 'winking',           weight: 3  },
+];

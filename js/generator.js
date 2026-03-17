@@ -113,5 +113,14 @@ function generateTags(state) {
     }
   }
 
+  // 6. Camera & framing tags (appended last so they describe the composition,
+  //    not the character itself)
+  const shotType    = SHOT_TYPES.find((o) => o.id === state.shotTypeId);
+  const cameraAngle = CAMERA_ANGLES.find((o) => o.id === state.cameraAngleId);
+  const gaze        = GAZE_OPTIONS.find((o) => o.id === state.gazeId);
+  if (shotType?.tag)    tags.push(shotType.tag);
+  if (cameraAngle?.tag) tags.push(cameraAngle.tag);
+  if (gaze?.tag)        tags.push(gaze.tag);
+
   return tags.join(', ');
 }
