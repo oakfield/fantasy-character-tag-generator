@@ -328,7 +328,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  cursor: pointer;
+  cursor: default;
   list-style: none; /* remove default browser triangle */
   user-select: none;
   margin-bottom: 0;
