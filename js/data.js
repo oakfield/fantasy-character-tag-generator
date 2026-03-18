@@ -544,7 +544,6 @@ const BODY_PARTS = [
 const SHOT_TYPES = [
   { id: '',            label: '— Any —',      tag: '',            weight: 70 },
   { id: 'portrait',    label: 'Portrait',      tag: 'portrait',    weight: 5  },
-  { id: 'bust',        label: 'Bust Shot',     tag: 'bust',        weight: 8  },
   { id: 'upper_body',  label: 'Upper Body',    tag: 'upper body',  weight: 10 },
   { id: 'cowboy_shot', label: 'Cowboy Shot',   tag: 'cowboy shot', weight: 8  },
   { id: 'full_body',   label: 'Full Body',     tag: 'full body',   weight: 12 },
