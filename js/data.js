@@ -569,7 +569,7 @@ const CAMERA_ANGLES = [
 const CAMERA_EMPHASIS_PARTS = [
   { id: 'eyes',    label: 'Eyes',    incompatibleCostumes: [],                                    getTags: ()    => ['eye focus']                },
   { id: 'lips',    label: 'Lips',    incompatibleCostumes: ['belt', 'boots', 'skirt', 'shorts'],  locksBodyCoverage: true,  locksShot: true,  getTags: ()    => ['close-up', 'lip focus']     },
-  { id: 'chest',   label: 'Chest',   incompatibleCostumes: [],                                    getTags: (sex) => sex === 'female' ? ['breast focus'] : ['pectoral focus'] },
+  { id: 'chest',   label: 'Chest',   incompatibleCostumes: ['boots'],  incompatibleBodyParts: ['thighs', 'feet'],  incompatibleShots: ['full_body', 'cowboy_shot'],  incompatibleAngles: ['from_behind'],  getTags: (sex) => sex === 'female' ? ['breast focus'] : ['pectoral focus'] },
   { id: 'abdomen', label: 'Abdomen', incompatibleCostumes: [],                                    getTags: ()    => ['navel focus']               },
   { id: 'thighs',  label: 'Thighs',  incompatibleCostumes: [],                                    getTags: ()    => ['thigh focus']               },
   { id: 'feet',    label: 'Feet',    incompatibleCostumes: [],                                    getTags: ()    => ['foot focus']                },

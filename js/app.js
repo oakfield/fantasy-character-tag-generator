@@ -97,19 +97,41 @@ function renderColorSelects() {
   $('skin-color-select').innerHTML = colorSelectHTML(state.skinColorId, SKIN_COLORS);
 }
 
+/**
+ * Like colorSelectHTML but supports disabling individual options.
+ * @param {string} selectedId
+ * @param {Array<{id:string,label:string}>} options
+ * @param {string[]} disabledIds
+ * @param {string} [disabledTitle]
+ * @returns {string}
+ */
+function framingSelectHTML(selectedId, options, disabledIds = [], disabledTitle = '') {
+  return options.map((o) => {
+    const isDisabled = disabledIds.includes(o.id);
+    return `<option value="${o.id}"${o.id === selectedId ? ' selected' : ''}${isDisabled ? ` disabled title="${disabledTitle}"` : ''}>${o.label}</option>`;
+  }).join('');
+}
+
 /** Populate all camera & framing <select> elements. */
 function renderFramingSelects() {
-  const emphasisPart = CAMERA_EMPHASIS_PARTS.find((p) => p.id === state.emphasisId);
-  const shotLocked   = emphasisPart?.locksShot ?? false;
+  const emphasisPart    = CAMERA_EMPHASIS_PARTS.find((p) => p.id === state.emphasisId);
+  const shotLocked      = emphasisPart?.locksShot ?? false;
+  const incompatibleShots  = emphasisPart?.incompatibleShots  ?? [];
+  const incompatibleAngles = emphasisPart?.incompatibleAngles ?? [];
+  const emphasisLabel   = emphasisPart?.label ?? '';
 
   const shotSelect = /** @type {HTMLSelectElement} */ ($('shot-type-select'));
-  shotSelect.innerHTML = colorSelectHTML(shotLocked ? '' : state.shotTypeId, SHOT_TYPES);
-  shotSelect.disabled  = shotLocked;
-  shotSelect.title     = shotLocked ? `Locked to — Any — by ${emphasisPart.label} emphasis` : '';
+  shotSelect.innerHTML = shotLocked
+    ? colorSelectHTML('', SHOT_TYPES)
+    : framingSelectHTML(state.shotTypeId, SHOT_TYPES, incompatibleShots, `Not suitable for ${emphasisLabel} emphasis`);
+  shotSelect.disabled = shotLocked;
+  shotSelect.title    = shotLocked ? `Locked to — Any — by ${emphasisLabel} emphasis` : '';
 
-  $('camera-angle-select').innerHTML = colorSelectHTML(state.cameraAngleId, CAMERA_ANGLES);
-  $('gaze-select').innerHTML         = colorSelectHTML(state.gazeId,        GAZE_OPTIONS);
-  $('emphasis-select').innerHTML     =
+  const angleSelect = /** @type {HTMLSelectElement} */ ($('camera-angle-select'));
+  angleSelect.innerHTML = framingSelectHTML(state.cameraAngleId, CAMERA_ANGLES, incompatibleAngles, `Not suitable for ${emphasisLabel} emphasis`);
+
+  $('gaze-select').innerHTML     = colorSelectHTML(state.gazeId, GAZE_OPTIONS);
+  $('emphasis-select').innerHTML =
     '<option value="">— None —</option>' +
     CAMERA_EMPHASIS_PARTS
       .map((p) => `<option value="${p.id}"${p.id === state.emphasisId ? ' selected' : ''}>${p.label}</option>`)
@@ -124,7 +146,8 @@ function renderBodyEmphasis() {
   const allBodyLocked   = emphasisPart?.locksBodyCoverage ?? false;
 
   container.innerHTML = BODY_PARTS.map((part) => {
-    const isLocked = allBodyLocked || (part.id === 'abdomen' && abdomenLocked);
+    const emphasisLocked  = !allBodyLocked && (emphasisPart?.incompatibleBodyParts?.includes(part.id) ?? false);
+    const isLocked = allBodyLocked || emphasisLocked || (part.id === 'abdomen' && abdomenLocked);
     const current  = isLocked ? '' : (state.bodyEmphasis?.[part.id] ?? '');
     const options  = COVERAGE_LEVELS.map((level) =>
       `<option value="${level.id}"${level.id === current ? ' selected' : ''}>${level.label}</option>`
@@ -136,7 +159,7 @@ function renderBodyEmphasis() {
           class="form-select body-coverage-select"
           id="body-${part.id}"
           data-part-id="${part.id}"
-          ${allBodyLocked ? `disabled title="Not visible with ${emphasisPart.label} emphasis"` : isLocked ? 'disabled title="Covered by Robe or Toga"' : ''}
+          ${allBodyLocked || emphasisLocked ? `disabled title="Not visible with ${emphasisPart.label} emphasis"` : isLocked ? 'disabled title="Covered by Robe or Toga"' : ''}
         >
           ${options}
         </select>
@@ -467,11 +490,23 @@ function bindEvents() {
     // Clear body coverage when the emphasis locks all body parts out of frame
     if (emphasis?.locksBodyCoverage) {
       state.bodyEmphasis = blankBodyEmphasis();
+    } else if (emphasis?.incompatibleBodyParts?.length) {
+      for (const partId of emphasis.incompatibleBodyParts) {
+        state.bodyEmphasis[partId] = '';
+      }
     }
 
     // Lock shot to — Any — when emphasis implies a fixed framing
     if (emphasis?.locksShot) {
       state.shotTypeId = '';
+    }
+
+    // Clear shot/angle if the current selection is incompatible with the new emphasis
+    if (emphasis?.incompatibleShots?.includes(state.shotTypeId)) {
+      state.shotTypeId = '';
+    }
+    if (emphasis?.incompatibleAngles?.includes(state.cameraAngleId)) {
+      state.cameraAngleId = '';
     }
 
     renderCostumes();

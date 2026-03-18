@@ -351,6 +351,7 @@ body {
 .form-section {
   border-top: 1px solid var(--clr-border);
   padding-top: var(--sp-5);
+  padding-bottom: var(--sp-5);
 }
 
 .form-section-title {
@@ -365,6 +366,7 @@ body {
 /* Collapsible sections using <details>/<summary> */
 .form-section--collapsible {
   /* <details> is a block element; give it the same spacing as .form-section */
+  padding-bottom: var(--sp-5);
 }
 
 .form-section--collapsible > summary.form-section-title {
