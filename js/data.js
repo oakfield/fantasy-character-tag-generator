@@ -55,13 +55,6 @@ const SPECIES = [
     impliedColors: { hair: true },
   },
   {
-    id: 'half_elf',
-    label: 'Half-Elf',
-    tags: ['half elf', 'slightly pointed ears'],
-    weight: 5,
-    incompatibleCostumes: [],
-  },
-  {
     id: 'orc',
     label: 'Orc',
     tags: ['orc', 'green skin', 'tusks'],
