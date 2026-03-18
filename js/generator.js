@@ -128,12 +128,9 @@ function generateTags(state) {
   if (cameraAngle?.tag) tags.push(cameraAngle.tag);
   if (gaze?.tag)        tags.push(gaze.tag);
 
-  // 8. Camera emphasis tags
-  for (const part of CAMERA_EMPHASIS_PARTS) {
-    if (state.selectedEmphasis?.has(part.id)) {
-      tags.push(...part.getTags(state.sexId));
-    }
-  }
+  // 8. Camera emphasis tag
+  const emphasis = CAMERA_EMPHASIS_PARTS.find((p) => p.id === state.emphasisId);
+  if (emphasis) tags.push(...emphasis.getTags(state.sexId));
 
   return tags.join(', ');
 }

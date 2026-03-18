@@ -559,12 +559,12 @@ const CAMERA_ANGLES = [
  * @type {{ id: string, label: string, getTags: (sex: string) => string[] }[]}
  */
 const CAMERA_EMPHASIS_PARTS = [
-  { id: 'eyes',    label: 'Eyes',    getTags: ()    => ['eye focus']       },
-  { id: 'lips',    label: 'Lips',    getTags: ()    => ['lip focus']       },
-  { id: 'chest',   label: 'Chest',   getTags: (sex) => sex === 'female' ? ['breast focus']   : ['pectoral focus'] },
-  { id: 'abdomen', label: 'Abdomen', getTags: ()    => ['navel focus']     },
-  { id: 'thighs',  label: 'Thighs',  getTags: ()    => ['thigh focus']     },
-  { id: 'feet',    label: 'Feet',    getTags: ()    => ['foot focus']      },
+  { id: 'eyes',    label: 'Eyes',    incompatibleCostumes: [],                                    getTags: ()    => ['eye focus']                },
+  { id: 'lips',    label: 'Lips',    incompatibleCostumes: ['belt', 'boots', 'skirt', 'shorts'],  locksBodyCoverage: true,  locksShot: true,  getTags: ()    => ['close-up', 'lip focus']     },
+  { id: 'chest',   label: 'Chest',   incompatibleCostumes: [],                                    getTags: (sex) => sex === 'female' ? ['breast focus'] : ['pectoral focus'] },
+  { id: 'abdomen', label: 'Abdomen', incompatibleCostumes: [],                                    getTags: ()    => ['navel focus']               },
+  { id: 'thighs',  label: 'Thighs',  incompatibleCostumes: [],                                    getTags: ()    => ['thigh focus']               },
+  { id: 'feet',    label: 'Feet',    incompatibleCostumes: [],                                    getTags: ()    => ['foot focus']                },
 ];
 
 /** @type {FramingOption[]} */

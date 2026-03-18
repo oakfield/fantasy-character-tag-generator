@@ -21,11 +21,11 @@ const RESET_STATE = {
   hairColorId:     '',
   eyeColorId:      '',
   skinColorId:     '',
-  shotTypeId:      '',
-  cameraAngleId:   '',
-  gazeId:          '',
-  bodyEmphasis:    null, // populated after BODY_PARTS is defined; see init()
-  selectedEmphasis: new Set(),
+  shotTypeId:    '',
+  cameraAngleId: '',
+  gazeId:        '',
+  emphasisId:    '',
+  bodyEmphasis:  null, // populated after BODY_PARTS is defined; see init()
 };
 
 const state = {
@@ -38,9 +38,9 @@ const state = {
   shotTypeId:       RESET_STATE.shotTypeId,
   cameraAngleId:    RESET_STATE.cameraAngleId,
   gazeId:           RESET_STATE.gazeId,
+  emphasisId:       RESET_STATE.emphasisId,
   bodyEmphasis:     null, // populated in init()
   selectedCostumes: new Set(),
-  selectedEmphasis: new Set(),
 };
 
 // ---------------------------------------------------------------------------
@@ -97,39 +97,34 @@ function renderColorSelects() {
   $('skin-color-select').innerHTML = colorSelectHTML(state.skinColorId, SKIN_COLORS);
 }
 
-/** Populate all three camera & framing <select> elements. */
+/** Populate all camera & framing <select> elements. */
 function renderFramingSelects() {
-  $('shot-type-select').innerHTML    = colorSelectHTML(state.shotTypeId,    SHOT_TYPES);
+  const emphasisPart = CAMERA_EMPHASIS_PARTS.find((p) => p.id === state.emphasisId);
+  const shotLocked   = emphasisPart?.locksShot ?? false;
+
+  const shotSelect = /** @type {HTMLSelectElement} */ ($('shot-type-select'));
+  shotSelect.innerHTML = colorSelectHTML(shotLocked ? '' : state.shotTypeId, SHOT_TYPES);
+  shotSelect.disabled  = shotLocked;
+  shotSelect.title     = shotLocked ? `Locked to — Any — by ${emphasisPart.label} emphasis` : '';
+
   $('camera-angle-select').innerHTML = colorSelectHTML(state.cameraAngleId, CAMERA_ANGLES);
   $('gaze-select').innerHTML         = colorSelectHTML(state.gazeId,        GAZE_OPTIONS);
-}
-
-/** Render the camera emphasis body-part chips. */
-function renderEmphasisChips() {
-  const container = $('emphasis-container');
-  container.innerHTML = CAMERA_EMPHASIS_PARTS.map((part) => {
-    const isChecked = state.selectedEmphasis.has(part.id);
-    const classes   = ['costume-chip', isChecked ? 'costume-chip--active' : ''].filter(Boolean).join(' ');
-    return `
-      <label class="${classes}">
-        <input
-          type="checkbox"
-          class="emphasis-checkbox"
-          data-part-id="${part.id}"
-          ${isChecked ? 'checked' : ''}
-        />
-        ${part.label}
-      </label>`;
-  }).join('');
+  $('emphasis-select').innerHTML     =
+    '<option value="">— None —</option>' +
+    CAMERA_EMPHASIS_PARTS
+      .map((p) => `<option value="${p.id}"${p.id === state.emphasisId ? ' selected' : ''}>${p.label}</option>`)
+      .join('');
 }
 
 /** Render the body part coverage rows. */
 function renderBodyEmphasis() {
   const container = $('body-emphasis-container');
-  const abdomenLocked = state.selectedCostumes.has('robe') || state.selectedCostumes.has('toga');
+  const abdomenLocked   = state.selectedCostumes.has('robe') || state.selectedCostumes.has('toga');
+  const emphasisPart    = CAMERA_EMPHASIS_PARTS.find((p) => p.id === state.emphasisId);
+  const allBodyLocked   = emphasisPart?.locksBodyCoverage ?? false;
 
   container.innerHTML = BODY_PARTS.map((part) => {
-    const isLocked = part.id === 'abdomen' && abdomenLocked;
+    const isLocked = allBodyLocked || (part.id === 'abdomen' && abdomenLocked);
     const current  = isLocked ? '' : (state.bodyEmphasis?.[part.id] ?? '');
     const options  = COVERAGE_LEVELS.map((level) =>
       `<option value="${level.id}"${level.id === current ? ' selected' : ''}>${level.label}</option>`
@@ -141,7 +136,7 @@ function renderBodyEmphasis() {
           class="form-select body-coverage-select"
           id="body-${part.id}"
           data-part-id="${part.id}"
-          ${isLocked ? 'disabled title="Covered by Robe or Toga"' : ''}
+          ${allBodyLocked ? `disabled title="Not visible with ${emphasisPart.label} emphasis"` : isLocked ? 'disabled title="Covered by Robe or Toga"' : ''}
         >
           ${options}
         </select>
@@ -184,12 +179,17 @@ function renderCostumes() {
       const isChestConflict = chestCoverage === 'exposed'
         && (item.id === 'tunic' || item.id === 'robe' || item.id === 'toga');
 
-      const isDisabled = isIncompatible || isPrereqUnmet || isBootsConflict || isChestConflict;
+      const currentEmphasis = CAMERA_EMPHASIS_PARTS.find((p) => p.id === state.emphasisId);
+      const isEmphasisConflict = currentEmphasis?.incompatibleCostumes.includes(item.id) ?? false;
+
+      const isDisabled = isIncompatible || isPrereqUnmet || isBootsConflict || isChestConflict || isEmphasisConflict;
       const isChecked  = state.selectedCostumes.has(item.id) && !isDisabled;
 
       let title = '';
       if (isIncompatible) {
         title = 'Not compatible with this species';
+      } else if (isEmphasisConflict) {
+        title = `Not visible with ${currentEmphasis.label} emphasis`;
       } else if (isChestConflict) {
         title = 'Incompatible with uncovered chest';
       } else if (isBootsConflict) {
@@ -281,9 +281,7 @@ function renderSummary() {
     `<li><span class="summary-key">Angle</span><span class="summary-val">${cameraAngle?.label || '—'}</span></li>`,
     `<li><span class="summary-key">Gaze</span><span class="summary-val">${gaze?.label        || '—'}</span></li>`,
     `<li><span class="summary-key">Emphasis</span><span class="summary-val">${
-      state.selectedEmphasis.size
-        ? CAMERA_EMPHASIS_PARTS.filter((p) => state.selectedEmphasis.has(p.id)).map((p) => p.label).join(', ')
-        : '—'
+      CAMERA_EMPHASIS_PARTS.find((p) => p.id === state.emphasisId)?.label ?? '—'
     }</span></li>`,
   ].join('');
 }
@@ -323,8 +321,8 @@ function applyState(newState) {
   state.shotTypeId    = newState.shotTypeId    ?? '';
   state.cameraAngleId = newState.cameraAngleId ?? '';
   state.gazeId        = newState.gazeId        ?? '';
+  state.emphasisId    = newState.emphasisId    ?? '';
   state.selectedCostumes = new Set(newState.selectedCostumes);
-  state.selectedEmphasis = new Set(newState.selectedEmphasis ?? []);
 
   // Copy body emphasis, filling in any missing parts with ''
   state.bodyEmphasis = blankBodyEmphasis();
@@ -340,7 +338,6 @@ function applyState(newState) {
   renderSexRadios();
   renderColorSelects();
   renderFramingSelects();
-  renderEmphasisChips();
   renderBodyEmphasis();
   renderAll();
 }
@@ -453,24 +450,33 @@ function bindEvents() {
     renderSummary();
   });
 
-  // Camera emphasis chips — event delegation on the container
-  $('emphasis-container').addEventListener('change', (e) => {
-    const target = /** @type {HTMLInputElement} */ (e.target);
-    if (!target.classList.contains('emphasis-checkbox')) return;
+  // Camera emphasis
+  $('emphasis-select').addEventListener('change', (e) => {
+    state.emphasisId = /** @type {HTMLSelectElement} */ (e.target).value;
 
-    const partId = target.dataset.partId;
-    if (!partId) return;
+    const emphasis = CAMERA_EMPHASIS_PARTS.find((p) => p.id === state.emphasisId);
 
-    if (target.checked) {
-      state.selectedEmphasis.add(partId);
-    } else {
-      state.selectedEmphasis.delete(partId);
+    // Remove costumes that fall outside the frame for this emphasis
+    if (emphasis?.incompatibleCostumes.length) {
+      for (const id of emphasis.incompatibleCostumes) {
+        state.selectedCostumes.delete(id);
+      }
+      enforcePrerequisites(state.selectedCostumes);
     }
 
-    // Refresh chip visual state
-    const label = target.closest('label');
-    label?.classList.toggle('costume-chip--active', target.checked);
+    // Clear body coverage when the emphasis locks all body parts out of frame
+    if (emphasis?.locksBodyCoverage) {
+      state.bodyEmphasis = blankBodyEmphasis();
+    }
 
+    // Lock shot to — Any — when emphasis implies a fixed framing
+    if (emphasis?.locksShot) {
+      state.shotTypeId = '';
+    }
+
+    renderCostumes();
+    renderBodyEmphasis();
+    renderFramingSelects();
     renderOutput();
     renderSummary();
   });
@@ -563,7 +569,6 @@ function init() {
   renderSexRadios();
   renderColorSelects();
   renderFramingSelects();
-  renderEmphasisChips();
   renderBodyEmphasis();
   renderJobSelect();
   renderAll();
