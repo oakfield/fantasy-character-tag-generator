@@ -106,12 +106,56 @@ function generateRandomCharacter() {
   // Remove items whose prerequisites weren't included in this outfit
   enforcePrerequisites(selectedCostumes);
 
-  // Pick appearance colors, but skip any attribute already defined by the species
-  // (e.g. dark elf implies white hair + dark skin, vampire implies red eyes + pale skin)
-  const implied = species.impliedColors ?? {};
-  const hairColor = implied.hair ? { id: '' } : weightedRandom(HAIR_COLORS.filter((c) => c.weight > 0));
-  const eyeColor  = implied.eyes ? { id: '' } : weightedRandom(EYE_COLORS.filter((c) => c.weight > 0));
-  const skinColor = implied.skin ? { id: '' } : weightedRandom(SKIN_COLORS.filter((c) => c.weight > 0));
+  // ---------------------------------------------------------------------------
+  // Appearance colours
+  // Skin is picked first so eye/hair pools can be biased toward realistic
+  // combinations (dark skin → dark eyes/hair; light skin → light eyes).
+  // ---------------------------------------------------------------------------
+
+  const implied   = species.impliedColors ?? {};
+  const skinColor = implied.skin ? { id: '', toneGroup: null } : weightedRandom(SKIN_COLORS.filter((c) => c.weight > 0));
+  const toneGroup = skinColor.toneGroup ?? null;
+
+  /**
+   * Return a copy of a colour pool with each entry's weight scaled by a
+   * per-id multiplier map. Missing ids default to ×1; results are floored to
+   * a minimum weight of 1 so no option is completely removed.
+   * @param {Array<{id:string,weight:number}>} pool
+   * @param {Record<string,number>} multipliers
+   */
+  function applyMultipliers(pool, multipliers) {
+    return pool.map((c) => {
+      const m = multipliers[c.id] ?? 1;
+      return m === 1 ? c : { ...c, weight: Math.max(1, Math.round(c.weight * m)) };
+    });
+  }
+
+  // Eye-colour weight multipliers per skin tone group.
+  // 'light' skin → light eyes likely;  'dark' skin → dark eyes likely.
+  const EYE_MULTIPLIERS = {
+    light: { brown: 0.5, blue: 1.8, green: 1.6, hazel: 1.3, gray: 2.0,
+             amber: 0.8, red: 0.5, purple: 0.6, gold: 0.7, silver: 2.0,
+             black: 0.2, heterochromia: 0.5 },
+    dark:  { brown: 2.5, blue: 0.3, green: 0.3, hazel: 2.0, gray: 0.4,
+             amber: 2.0, red: 0.8, purple: 0.8, gold: 0.8, silver: 0.5,
+             black: 3.0, heterochromia: 0.5 },
+  };
+
+  // Hair-colour weight multipliers for dark skin tones only.
+  const DARK_SKIN_HAIR_MULTIPLIERS = {
+    black: 1.6, brown: 1.4, auburn: 1.1,
+    blonde: 0.2, white: 0.2, silver: 0.2, gray: 0.3, platinum: 0.2,
+    red: 0.6, blue: 0.6, purple: 0.6, pink: 0.6, green: 0.6, orange: 0.6,
+  };
+
+  const baseEyes = EYE_COLORS.filter((c) => c.weight > 0);
+  const eyePool  = EYE_MULTIPLIERS[toneGroup] ? applyMultipliers(baseEyes, EYE_MULTIPLIERS[toneGroup]) : baseEyes;
+
+  const baseHair = HAIR_COLORS.filter((c) => c.weight > 0);
+  const hairPool = toneGroup === 'dark' ? applyMultipliers(baseHair, DARK_SKIN_HAIR_MULTIPLIERS) : baseHair;
+
+  const eyeColor  = implied.eyes ? { id: '' } : weightedRandom(eyePool);
+  const hairColor = implied.hair ? { id: '' } : weightedRandom(hairPool);
 
   // Pick camera & framing — "Any" (id: '') is included in the pool with a high
   // weight, so framing will be left unspecified most of the time.

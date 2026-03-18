@@ -300,21 +300,29 @@ const EYE_COLORS = [
   { id: 'heterochromia', label: 'Heterochromia', tag: 'heterochromia', weight: 2 },
 ];
 
-/** @type {ColorOption[]} */
+/**
+ * @typedef {{ id: string, label: string, tag: string, weight: number, toneGroup?: string|null }} SkinColorOption
+ * toneGroup: 'light' | 'medium' | 'dark' | 'fantasy' | null
+ * Used by the randomizer to bias eye/hair colour towards realistic combinations.
+ */
+
+/** @type {SkinColorOption[]} */
 const SKIN_COLORS = [
-  { id: '',       label: '— Any —', tag: '',            weight: 0  },
-  { id: 'pale',   label: 'Pale',    tag: 'pale skin',   weight: 12 },
-  { id: 'fair',   label: 'Fair',    tag: 'fair skin',   weight: 14 },
-  { id: 'light',  label: 'Light',   tag: 'light skin',  weight: 12 },
-  { id: 'tan',    label: 'Tan',     tag: 'tan skin',    weight: 11 },
-  { id: 'brown',  label: 'Brown',   tag: 'brown skin',  weight: 9  },
-  { id: 'dark',   label: 'Dark',    tag: 'dark skin',   weight: 8  },
-  { id: 'ebony',  label: 'Ebony',   tag: 'dark skin',   weight: 5  },
-  { id: 'green',  label: 'Green',   tag: 'green skin',  weight: 4  },
-  { id: 'gray',   label: 'Gray',    tag: 'gray skin',   weight: 4  },
-  { id: 'blue',   label: 'Blue',    tag: 'blue skin',   weight: 3  },
-  { id: 'purple', label: 'Purple',  tag: 'purple skin', weight: 3  },
-  { id: 'golden', label: 'Golden',  tag: 'golden skin', weight: 3  },
+  { id: '',       label: '— Any —', tag: '',            weight: 0,  toneGroup: null      },
+  // Realistic tones — equal weight so each is equally likely
+  { id: 'pale',   label: 'Pale',    tag: 'pale skin',   weight: 10, toneGroup: 'light'   },
+  { id: 'fair',   label: 'Fair',    tag: 'fair skin',   weight: 10, toneGroup: 'light'   },
+  { id: 'light',  label: 'Light',   tag: 'light skin',  weight: 10, toneGroup: 'light'   },
+  { id: 'tan',    label: 'Tan',     tag: 'tan skin',    weight: 10, toneGroup: 'medium'  },
+  { id: 'brown',  label: 'Brown',   tag: 'brown skin',  weight: 10, toneGroup: 'dark'    },
+  { id: 'dark',   label: 'Dark',    tag: 'dark skin',   weight: 10, toneGroup: 'dark'    },
+  { id: 'ebony',  label: 'Ebony',   tag: 'dark skin',   weight: 10, toneGroup: 'dark'    },
+  // Fantasy tones — much less common
+  { id: 'green',  label: 'Green',   tag: 'green skin',  weight: 2,  toneGroup: 'fantasy' },
+  { id: 'gray',   label: 'Gray',    tag: 'gray skin',   weight: 2,  toneGroup: 'fantasy' },
+  { id: 'blue',   label: 'Blue',    tag: 'blue skin',   weight: 2,  toneGroup: 'fantasy' },
+  { id: 'purple', label: 'Purple',  tag: 'purple skin', weight: 2,  toneGroup: 'fantasy' },
+  { id: 'golden', label: 'Golden',  tag: 'golden skin', weight: 2,  toneGroup: 'fantasy' },
 ];
 
 // ---------------------------------------------------------------------------
