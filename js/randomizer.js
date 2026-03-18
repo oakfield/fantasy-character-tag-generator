@@ -119,6 +119,24 @@ function generateRandomCharacter() {
   const cameraAngle = weightedRandom(CAMERA_ANGLES);
   const gaze        = weightedRandom(GAZE_OPTIONS);
 
+  // Pick body & coverage — each part has a 15% chance of being set.
+  // Bias toward partial (45%) over covered (30%) and exposed (25%).
+  const COVERAGE_RANDOM_POOL = [
+    { id: 'covered', weight: 30 },
+    { id: 'partial', weight: 45 },
+    { id: 'exposed', weight: 25 },
+  ];
+  const bodyEmphasis = {};
+  for (const part of BODY_PARTS) {
+    bodyEmphasis[part.id] = Math.random() < 0.15
+      ? weightedRandom(COVERAGE_RANDOM_POOL).id
+      : '';
+  }
+  // Enforce boots/feet constraint
+  if (bodyEmphasis.feet === 'partial' || bodyEmphasis.feet === 'exposed') {
+    selectedCostumes.delete('boots');
+  }
+
   return {
     speciesId:     species.id,
     sexId:         sex.id,
@@ -129,6 +147,7 @@ function generateRandomCharacter() {
     shotTypeId:    shotType.id,
     cameraAngleId: cameraAngle.id,
     gazeId:        gaze.id,
+    bodyEmphasis,
     selectedCostumes,
   };
 }

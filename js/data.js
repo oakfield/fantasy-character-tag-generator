@@ -451,6 +451,104 @@ const COSTUME_CATEGORIES = [
 ];
 
 // ---------------------------------------------------------------------------
+// Body & Coverage
+// ---------------------------------------------------------------------------
+
+/**
+ * The four coverage states a body part can be in.
+ * id '' means "no emphasis selected" — no tags are emitted.
+ * @type {{ id: string, label: string }[]}
+ */
+const COVERAGE_LEVELS = [
+  { id: '',        label: '— None —'         },
+  { id: 'covered', label: 'Fully Covered'     },
+  { id: 'partial', label: 'Partially Covered' },
+  { id: 'exposed', label: 'Uncovered'         },
+];
+
+/**
+ * @typedef {Object} BodyPart
+ * @property {string} id
+ * @property {string} label
+ * @property {(coverage: string, sex: string, costumes: Set<string>) => string[]} getTags
+ */
+
+/** @type {BodyPart[]} */
+const BODY_PARTS = [
+  {
+    id: 'eyes',
+    label: 'Eyes',
+    getTags: (coverage) => {
+      if (coverage === 'covered') return ['detailed eyes'];
+      if (coverage === 'partial') return ['half-lidded eyes'];
+      if (coverage === 'exposed') return ['wide eyes'];
+      return [];
+    },
+  },
+  {
+    id: 'lips',
+    label: 'Lips',
+    getTags: (coverage) => {
+      if (coverage === 'covered') return ['closed mouth'];
+      if (coverage === 'partial') return ['parted lips'];
+      if (coverage === 'exposed') return ['open mouth'];
+      return [];
+    },
+  },
+  {
+    id: 'chest',
+    label: 'Chest',
+    getTags: (coverage, sex, costumes) => {
+      if (!coverage || coverage === 'covered') return [];
+      const hasArmor = costumes.has('plate_armor') || costumes.has('chainmail') || costumes.has('leather_armor');
+      if (coverage === 'partial') {
+        if (hasArmor) return sex === 'female' ? ['cleavage', 'revealing armor'] : ['open armor'];
+        return sex === 'female' ? ['cleavage'] : ['open shirt', 'partially undressed'];
+      }
+      if (coverage === 'exposed') {
+        if (hasArmor) return sex === 'female' ? ['topless', 'revealing armor'] : ['shirtless', 'open armor'];
+        return sex === 'female' ? ['topless', 'bare chest'] : ['shirtless', 'bare chest'];
+      }
+      return [];
+    },
+  },
+  {
+    id: 'abdomen',
+    label: 'Abdomen',
+    getTags: (coverage, sex) => {
+      if (!coverage || coverage === 'covered') return [];
+      if (coverage === 'partial') return ['midriff', 'navel'];
+      if (coverage === 'exposed') return sex === 'female' ? ['bare midriff'] : ['bare abdomen'];
+      return [];
+    },
+  },
+  {
+    id: 'thighs',
+    label: 'Thighs',
+    getTags: (coverage, sex, costumes) => {
+      if (!coverage || coverage === 'covered') return [];
+      const hasSkirt = costumes.has('skirt');
+      if (coverage === 'partial') {
+        if (sex === 'female') return hasSkirt ? ['split skirt', 'thigh gap'] : ['thighhighs', 'thigh gap'];
+        return ['rolled up pants'];
+      }
+      if (coverage === 'exposed') return sex === 'female' ? ['bare thighs'] : ['bare legs'];
+      return [];
+    },
+  },
+  {
+    id: 'feet',
+    label: 'Feet',
+    getTags: (coverage) => {
+      if (!coverage || coverage === 'covered') return [];
+      if (coverage === 'partial') return ['sandals', 'bare ankles'];
+      if (coverage === 'exposed') return ['barefoot'];
+      return [];
+    },
+  },
+];
+
+// ---------------------------------------------------------------------------
 // Camera & Framing
 // ---------------------------------------------------------------------------
 

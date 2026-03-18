@@ -9,6 +9,11 @@
 // ---------------------------------------------------------------------------
 
 /** @type {import('./generator.js').CharacterState} */
+/** Blank bodyEmphasis object — one key per body part, all set to ''. */
+function blankBodyEmphasis() {
+  return Object.fromEntries(BODY_PARTS.map((p) => [p.id, '']));
+}
+
 const RESET_STATE = {
   speciesId:     'human',
   sexId:         'female',
@@ -19,6 +24,7 @@ const RESET_STATE = {
   shotTypeId:    '',
   cameraAngleId: '',
   gazeId:        '',
+  bodyEmphasis:  null, // populated after BODY_PARTS is defined; see init()
 };
 
 const state = {
@@ -31,6 +37,7 @@ const state = {
   shotTypeId:    RESET_STATE.shotTypeId,
   cameraAngleId: RESET_STATE.cameraAngleId,
   gazeId:        RESET_STATE.gazeId,
+  bodyEmphasis:  null, // populated in init()
   selectedCostumes: new Set(),
 };
 
@@ -95,6 +102,24 @@ function renderFramingSelects() {
   $('gaze-select').innerHTML         = colorSelectHTML(state.gazeId,        GAZE_OPTIONS);
 }
 
+/** Render the body part coverage rows. */
+function renderBodyEmphasis() {
+  const container = $('body-emphasis-container');
+  container.innerHTML = BODY_PARTS.map((part) => {
+    const current = state.bodyEmphasis?.[part.id] ?? '';
+    const options = COVERAGE_LEVELS.map((level) =>
+      `<option value="${level.id}"${level.id === current ? ' selected' : ''}>${level.label}</option>`
+    ).join('');
+    return `
+      <div class="body-part-row">
+        <label class="body-part-label" for="body-${part.id}">${part.label}</label>
+        <select class="form-select body-coverage-select" id="body-${part.id}" data-part-id="${part.id}">
+          ${options}
+        </select>
+      </div>`;
+  }).join('');
+}
+
 /** Populate the job <select>. */
 function renderJobSelect() {
   const select = $('job-select');
@@ -122,12 +147,18 @@ function renderCostumes() {
         ? !prereqRule.prereqs.some((p) => state.selectedCostumes.has(p))
         : false;
 
-      const isDisabled = isIncompatible || isPrereqUnmet;
+      const feetCoverage = state.bodyEmphasis?.feet ?? '';
+      const isBootsConflict = item.id === 'boots'
+        && (feetCoverage === 'partial' || feetCoverage === 'exposed');
+
+      const isDisabled = isIncompatible || isPrereqUnmet || isBootsConflict;
       const isChecked  = state.selectedCostumes.has(item.id) && !isDisabled;
 
       let title = '';
       if (isIncompatible) {
         title = 'Not compatible with this species';
+      } else if (isBootsConflict) {
+        title = 'Incompatible with current feet coverage setting';
       } else if (isPrereqUnmet) {
         title = prereqRule.tooltip ?? (() => {
           const labels = prereqRule.prereqs
@@ -185,6 +216,13 @@ function renderSummary() {
     (item) => state.selectedCostumes.has(item.id) && !incompatible.has(item.id)
   );
 
+  const configuredParts = BODY_PARTS
+    .filter((p) => state.bodyEmphasis?.[p.id])
+    .map((p) => {
+      const level = COVERAGE_LEVELS.find((l) => l.id === state.bodyEmphasis[p.id]);
+      return `${p.label}: ${level?.label ?? ''}`;
+    });
+
   const hairColor   = HAIR_COLORS.find((c) => c.id === state.hairColorId);
   const eyeColor    = EYE_COLORS.find((c) => c.id === state.eyeColorId);
   const skinColor   = SKIN_COLORS.find((c) => c.id === state.skinColorId);
@@ -203,6 +241,7 @@ function renderSummary() {
     `<li><span class="summary-key">Equipment</span><span class="summary-val">${
       activeItems.length ? activeItems.map((i) => i.label).join(', ') : 'None'
     }</span></li>`,
+    `<li><span class="summary-key">Focus</span><span class="summary-val">${configuredParts.length ? configuredParts.join(', ') : '—'}</span></li>`,
     `<li><span class="summary-key">Shot</span><span class="summary-val">${shotType?.label    || '—'}</span></li>`,
     `<li><span class="summary-key">Angle</span><span class="summary-val">${cameraAngle?.label || '—'}</span></li>`,
     `<li><span class="summary-key">Gaze</span><span class="summary-val">${gaze?.label        || '—'}</span></li>`,
@@ -220,12 +259,11 @@ function renderAll() {
 // State mutation helpers
 // ---------------------------------------------------------------------------
 
-/** Reset to the default state: Human, Female, no job, no costume. */
+/** Reset to the default state: Human, Female, no job, no costume, no body emphasis. */
 function resetState() {
   applyState({
-    speciesId: RESET_STATE.speciesId,
-    sexId: RESET_STATE.sexId,
-    jobId: RESET_STATE.jobId,
+    ...RESET_STATE,
+    bodyEmphasis: blankBodyEmphasis(),
     selectedCostumes: new Set(),
   });
 }
@@ -247,12 +285,21 @@ function applyState(newState) {
   state.gazeId        = newState.gazeId        ?? '';
   state.selectedCostumes = new Set(newState.selectedCostumes);
 
+  // Copy body emphasis, filling in any missing parts with ''
+  state.bodyEmphasis = blankBodyEmphasis();
+  if (newState.bodyEmphasis) {
+    for (const part of BODY_PARTS) {
+      state.bodyEmphasis[part.id] = newState.bodyEmphasis[part.id] ?? '';
+    }
+  }
+
   // Re-render controls that hold their own DOM state
   $('species-select').value = state.speciesId;
   $('job-select').value     = state.jobId;
   renderSexRadios();
   renderColorSelects();
   renderFramingSelects();
+  renderBodyEmphasis();
   renderAll();
 }
 
@@ -358,6 +405,27 @@ function bindEvents() {
     renderSummary();
   });
 
+  // Body & coverage — event delegation on the container
+  $('body-emphasis-container').addEventListener('change', (e) => {
+    const target = /** @type {HTMLSelectElement} */ (e.target);
+    if (!target.classList.contains('body-coverage-select')) return;
+
+    const partId   = target.dataset.partId;
+    const coverage = target.value;
+    state.bodyEmphasis[partId] = coverage;
+
+    // Boots are incompatible with partial/exposed feet coverage
+    if (partId === 'feet' && (coverage === 'partial' || coverage === 'exposed')) {
+      state.selectedCostumes.delete('boots');
+      renderCostumes();
+    } else if (partId === 'feet') {
+      renderCostumes();
+    }
+
+    renderOutput();
+    renderSummary();
+  });
+
   // Random button
   $('random-btn').addEventListener('click', () => {
     applyState(generateRandomCharacter());
@@ -408,10 +476,15 @@ function showCopyFeedback() {
 // ---------------------------------------------------------------------------
 
 function init() {
+  // bodyEmphasis depends on BODY_PARTS being defined, so initialize it here
+  RESET_STATE.bodyEmphasis = blankBodyEmphasis();
+  state.bodyEmphasis       = blankBodyEmphasis();
+
   renderSpeciesSelect();
   renderSexRadios();
   renderColorSelects();
   renderFramingSelects();
+  renderBodyEmphasis();
   renderJobSelect();
   renderAll();
   bindEvents();

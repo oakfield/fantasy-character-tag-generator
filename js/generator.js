@@ -113,7 +113,13 @@ function generateTags(state) {
     }
   }
 
-  // 6. Camera & framing tags (appended last so they describe the composition,
+  // 6. Body & coverage tags
+  for (const part of BODY_PARTS) {
+    const coverage = state.bodyEmphasis?.[part.id] ?? '';
+    if (coverage) tags.push(...part.getTags(coverage, state.sexId, state.selectedCostumes));
+  }
+
+  // 7. Camera & framing tags (appended last so they describe the composition,
   //    not the character itself)
   const shotType    = SHOT_TYPES.find((o) => o.id === state.shotTypeId);
   const cameraAngle = CAMERA_ANGLES.find((o) => o.id === state.cameraAngleId);

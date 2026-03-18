@@ -288,6 +288,27 @@ body {
 }
 
 /* --------------------------------------------------------------------------
+   Body & Coverage grid
+   -------------------------------------------------------------------------- */
+.body-coverage-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.body-part-row {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  gap: var(--sp-3);
+  align-items: center;
+}
+
+.body-part-label {
+  font-size: 0.85rem;
+  color: var(--clr-text-label);
+}
+
+/* --------------------------------------------------------------------------
    Appearance grid (Hair / Eye / Skin color selects)
    -------------------------------------------------------------------------- */
 .appearance-grid {
