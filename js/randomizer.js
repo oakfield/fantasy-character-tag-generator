@@ -137,17 +137,24 @@ function generateRandomCharacter() {
     selectedCostumes.delete('boots');
   }
 
+  // Pick camera emphasis — each part has a 10% chance of being highlighted.
+  const selectedEmphasis = new Set();
+  for (const part of CAMERA_EMPHASIS_PARTS) {
+    if (Math.random() < 0.10) selectedEmphasis.add(part.id);
+  }
+
   return {
-    speciesId:     species.id,
-    sexId:         sex.id,
-    jobId:         job.id,
-    hairColorId:   hairColor.id,
-    eyeColorId:    eyeColor.id,
-    skinColorId:   skinColor.id,
-    shotTypeId:    shotType.id,
-    cameraAngleId: cameraAngle.id,
-    gazeId:        gaze.id,
+    speciesId:       species.id,
+    sexId:           sex.id,
+    jobId:           job.id,
+    hairColorId:     hairColor.id,
+    eyeColorId:      eyeColor.id,
+    skinColorId:     skinColor.id,
+    shotTypeId:      shotType.id,
+    cameraAngleId:   cameraAngle.id,
+    gazeId:          gaze.id,
     bodyEmphasis,
     selectedCostumes,
+    selectedEmphasis,
   };
 }

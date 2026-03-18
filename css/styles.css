@@ -205,6 +205,8 @@ body {
 
 .form-group--full {
   grid-column: 1 / -1;
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--clr-border);
 }
 
 .form-label {
@@ -306,6 +308,21 @@ body {
 .body-part-label {
   font-size: 0.85rem;
   color: var(--clr-text-label);
+  transition: color var(--transition);
+}
+
+/* Disabled body-coverage select and its paired label */
+.body-coverage-select:disabled {
+  background-color: var(--clr-disabled-bg);
+  border-color: var(--clr-border);
+  color: var(--clr-disabled-text);
+  /* Replace the arrow with a lock icon to signal the field is locked */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='14' viewBox='0 0 12 14'%3E%3Crect x='1' y='6' width='10' height='8' rx='1.5' stroke='%2340405a' stroke-width='1.5' fill='none'/%3E%3Cpath d='M3 6V4a3 3 0 0 1 6 0v2' stroke='%2340405a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  cursor: not-allowed;
+}
+
+.body-part-row:has(.body-coverage-select:disabled) .body-part-label {
+  color: var(--clr-disabled-text);
 }
 
 /* --------------------------------------------------------------------------

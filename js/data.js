@@ -560,6 +560,20 @@ const CAMERA_ANGLES = [
   { id: 'dutch_angle',  label: 'Dutch Angle',     tag: 'dutch angle', weight: 5  },
 ];
 
+/**
+ * Body parts that can be singled out for camera emphasis.
+ * getTags receives the character's sexId and returns the appropriate focus tags.
+ * @type {{ id: string, label: string, getTags: (sex: string) => string[] }[]}
+ */
+const CAMERA_EMPHASIS_PARTS = [
+  { id: 'eyes',    label: 'Eyes',    getTags: ()    => ['eye focus']       },
+  { id: 'lips',    label: 'Lips',    getTags: ()    => ['lip focus']       },
+  { id: 'chest',   label: 'Chest',   getTags: (sex) => sex === 'female' ? ['breast focus']   : ['pectoral focus'] },
+  { id: 'abdomen', label: 'Abdomen', getTags: ()    => ['navel focus']     },
+  { id: 'thighs',  label: 'Thighs',  getTags: ()    => ['thigh focus']     },
+  { id: 'feet',    label: 'Feet',    getTags: ()    => ['foot focus']      },
+];
+
 /** @type {FramingOption[]} */
 const GAZE_OPTIONS = [
   { id: '',                   label: '— Any —',          tag: '',                  weight: 60 },

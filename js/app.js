@@ -15,30 +15,32 @@ function blankBodyEmphasis() {
 }
 
 const RESET_STATE = {
-  speciesId:     'human',
-  sexId:         'female',
-  jobId:         '',
-  hairColorId:   '',
-  eyeColorId:    '',
-  skinColorId:   '',
-  shotTypeId:    '',
-  cameraAngleId: '',
-  gazeId:        '',
-  bodyEmphasis:  null, // populated after BODY_PARTS is defined; see init()
+  speciesId:       'human',
+  sexId:           'female',
+  jobId:           '',
+  hairColorId:     '',
+  eyeColorId:      '',
+  skinColorId:     '',
+  shotTypeId:      '',
+  cameraAngleId:   '',
+  gazeId:          '',
+  bodyEmphasis:    null, // populated after BODY_PARTS is defined; see init()
+  selectedEmphasis: new Set(),
 };
 
 const state = {
-  speciesId:     RESET_STATE.speciesId,
-  sexId:         RESET_STATE.sexId,
-  jobId:         RESET_STATE.jobId,
-  hairColorId:   RESET_STATE.hairColorId,
-  eyeColorId:    RESET_STATE.eyeColorId,
-  skinColorId:   RESET_STATE.skinColorId,
-  shotTypeId:    RESET_STATE.shotTypeId,
-  cameraAngleId: RESET_STATE.cameraAngleId,
-  gazeId:        RESET_STATE.gazeId,
-  bodyEmphasis:  null, // populated in init()
+  speciesId:        RESET_STATE.speciesId,
+  sexId:            RESET_STATE.sexId,
+  jobId:            RESET_STATE.jobId,
+  hairColorId:      RESET_STATE.hairColorId,
+  eyeColorId:       RESET_STATE.eyeColorId,
+  skinColorId:      RESET_STATE.skinColorId,
+  shotTypeId:       RESET_STATE.shotTypeId,
+  cameraAngleId:    RESET_STATE.cameraAngleId,
+  gazeId:           RESET_STATE.gazeId,
+  bodyEmphasis:     null, // populated in init()
   selectedCostumes: new Set(),
+  selectedEmphasis: new Set(),
 };
 
 // ---------------------------------------------------------------------------
@@ -100,6 +102,25 @@ function renderFramingSelects() {
   $('shot-type-select').innerHTML    = colorSelectHTML(state.shotTypeId,    SHOT_TYPES);
   $('camera-angle-select').innerHTML = colorSelectHTML(state.cameraAngleId, CAMERA_ANGLES);
   $('gaze-select').innerHTML         = colorSelectHTML(state.gazeId,        GAZE_OPTIONS);
+}
+
+/** Render the camera emphasis body-part chips. */
+function renderEmphasisChips() {
+  const container = $('emphasis-container');
+  container.innerHTML = CAMERA_EMPHASIS_PARTS.map((part) => {
+    const isChecked = state.selectedEmphasis.has(part.id);
+    const classes   = ['costume-chip', isChecked ? 'costume-chip--active' : ''].filter(Boolean).join(' ');
+    return `
+      <label class="${classes}">
+        <input
+          type="checkbox"
+          class="emphasis-checkbox"
+          data-part-id="${part.id}"
+          ${isChecked ? 'checked' : ''}
+        />
+        ${part.label}
+      </label>`;
+  }).join('');
 }
 
 /** Render the body part coverage rows. */
@@ -259,6 +280,11 @@ function renderSummary() {
     `<li><span class="summary-key">Shot</span><span class="summary-val">${shotType?.label    || '—'}</span></li>`,
     `<li><span class="summary-key">Angle</span><span class="summary-val">${cameraAngle?.label || '—'}</span></li>`,
     `<li><span class="summary-key">Gaze</span><span class="summary-val">${gaze?.label        || '—'}</span></li>`,
+    `<li><span class="summary-key">Emphasis</span><span class="summary-val">${
+      state.selectedEmphasis.size
+        ? CAMERA_EMPHASIS_PARTS.filter((p) => state.selectedEmphasis.has(p.id)).map((p) => p.label).join(', ')
+        : '—'
+    }</span></li>`,
   ].join('');
 }
 
@@ -298,6 +324,7 @@ function applyState(newState) {
   state.cameraAngleId = newState.cameraAngleId ?? '';
   state.gazeId        = newState.gazeId        ?? '';
   state.selectedCostumes = new Set(newState.selectedCostumes);
+  state.selectedEmphasis = new Set(newState.selectedEmphasis ?? []);
 
   // Copy body emphasis, filling in any missing parts with ''
   state.bodyEmphasis = blankBodyEmphasis();
@@ -313,6 +340,7 @@ function applyState(newState) {
   renderSexRadios();
   renderColorSelects();
   renderFramingSelects();
+  renderEmphasisChips();
   renderBodyEmphasis();
   renderAll();
 }
@@ -425,6 +453,28 @@ function bindEvents() {
     renderSummary();
   });
 
+  // Camera emphasis chips — event delegation on the container
+  $('emphasis-container').addEventListener('change', (e) => {
+    const target = /** @type {HTMLInputElement} */ (e.target);
+    if (!target.classList.contains('emphasis-checkbox')) return;
+
+    const partId = target.dataset.partId;
+    if (!partId) return;
+
+    if (target.checked) {
+      state.selectedEmphasis.add(partId);
+    } else {
+      state.selectedEmphasis.delete(partId);
+    }
+
+    // Refresh chip visual state
+    const label = target.closest('label');
+    label?.classList.toggle('costume-chip--active', target.checked);
+
+    renderOutput();
+    renderSummary();
+  });
+
   // Body & coverage — event delegation on the container
   $('body-emphasis-container').addEventListener('change', (e) => {
     const target = /** @type {HTMLSelectElement} */ (e.target);
@@ -513,6 +563,7 @@ function init() {
   renderSexRadios();
   renderColorSelects();
   renderFramingSelects();
+  renderEmphasisChips();
   renderBodyEmphasis();
   renderJobSelect();
   renderAll();
