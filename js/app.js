@@ -204,9 +204,9 @@ function renderSummary() {
   list.innerHTML = [
     row('Species',   species?.label),
     row('Sex',       sex?.label),
-    row('Hair',      hairColor?.label),
-    row('Eyes',      eyeColor?.label),
-    row('Skin',      skinColor?.label),
+    row('Hair',      hairColor?.tag  ? hairColor.label  : ''),
+    row('Eyes',      eyeColor?.tag   ? eyeColor.label   : ''),
+    row('Skin',      skinColor?.tag  ? skinColor.label  : ''),
     row('Job',       job?.label),
     row('Equipment', activeItems.length ? activeItems.map((i) => i.label).join(', ') : ''),
     row('Shot',      shotType?.tag   ? shotType.label   : ''),
