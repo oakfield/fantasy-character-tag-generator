@@ -288,24 +288,28 @@ function renderSummary() {
   const cameraAngle = CAMERA_ANGLES.find((o) => o.id === state.cameraAngleId);
   const gaze        = GAZE_OPTIONS.find((o) => o.id === state.gazeId);
 
+  /**
+   * Return a summary <li> string, or '' to omit the row entirely.
+   * @param {string} key
+   * @param {string|undefined} value  Falsy values cause the row to be skipped.
+   */
+  const row = (key, value) =>
+    value ? `<li><span class="summary-key">${key}</span><span class="summary-val">${value}</span></li>` : '';
+
   const list = $('summary-list');
   list.innerHTML = [
-    `<li><span class="summary-key">Species</span><span class="summary-val">${species?.label ?? '—'}</span></li>`,
-    `<li><span class="summary-key">Sex</span><span class="summary-val">${sex?.label ?? '—'}</span></li>`,
-    `<li><span class="summary-key">Hair</span><span class="summary-val">${hairColor?.label || '—'}</span></li>`,
-    `<li><span class="summary-key">Eyes</span><span class="summary-val">${eyeColor?.label || '—'}</span></li>`,
-    `<li><span class="summary-key">Skin</span><span class="summary-val">${skinColor?.label || '—'}</span></li>`,
-    `<li><span class="summary-key">Job</span><span class="summary-val">${job?.label ?? '—'}</span></li>`,
-    `<li><span class="summary-key">Equipment</span><span class="summary-val">${
-      activeItems.length ? activeItems.map((i) => i.label).join(', ') : 'None'
-    }</span></li>`,
-    `<li><span class="summary-key">Focus</span><span class="summary-val">${configuredParts.length ? configuredParts.join(', ') : '—'}</span></li>`,
-    `<li><span class="summary-key">Shot</span><span class="summary-val">${shotType?.label    || '—'}</span></li>`,
-    `<li><span class="summary-key">Angle</span><span class="summary-val">${cameraAngle?.label || '—'}</span></li>`,
-    `<li><span class="summary-key">Gaze</span><span class="summary-val">${gaze?.label        || '—'}</span></li>`,
-    `<li><span class="summary-key">Emphasis</span><span class="summary-val">${
-      CAMERA_EMPHASIS_PARTS.find((p) => p.id === state.emphasisId)?.label ?? '—'
-    }</span></li>`,
+    row('Species',   species?.label),
+    row('Sex',       sex?.label),
+    row('Hair',      hairColor?.label),
+    row('Eyes',      eyeColor?.label),
+    row('Skin',      skinColor?.label),
+    row('Job',       job?.label),
+    row('Equipment', activeItems.length ? activeItems.map((i) => i.label).join(', ') : ''),
+    row('Focus',     configuredParts.length ? configuredParts.join(', ') : ''),
+    row('Shot',      shotType?.tag    ? shotType.label    : ''),
+    row('Angle',     cameraAngle?.tag ? cameraAngle.label : ''),
+    row('Gaze',      gaze?.tag        ? gaze.label        : ''),
+    row('Emphasis',  CAMERA_EMPHASIS_PARTS.find((p) => p.id === state.emphasisId)?.label ?? ''),
   ].join('');
 }
 
