@@ -105,15 +105,23 @@ function renderFramingSelects() {
 /** Render the body part coverage rows. */
 function renderBodyEmphasis() {
   const container = $('body-emphasis-container');
+  const abdomenLocked = state.selectedCostumes.has('robe') || state.selectedCostumes.has('toga');
+
   container.innerHTML = BODY_PARTS.map((part) => {
-    const current = state.bodyEmphasis?.[part.id] ?? '';
-    const options = COVERAGE_LEVELS.map((level) =>
+    const isLocked = part.id === 'abdomen' && abdomenLocked;
+    const current  = isLocked ? '' : (state.bodyEmphasis?.[part.id] ?? '');
+    const options  = COVERAGE_LEVELS.map((level) =>
       `<option value="${level.id}"${level.id === current ? ' selected' : ''}>${level.label}</option>`
     ).join('');
     return `
       <div class="body-part-row">
         <label class="body-part-label" for="body-${part.id}">${part.label}</label>
-        <select class="form-select body-coverage-select" id="body-${part.id}" data-part-id="${part.id}">
+        <select
+          class="form-select body-coverage-select"
+          id="body-${part.id}"
+          data-part-id="${part.id}"
+          ${isLocked ? 'disabled title="Covered by Robe or Toga"' : ''}
+        >
           ${options}
         </select>
       </div>`;
@@ -151,12 +159,18 @@ function renderCostumes() {
       const isBootsConflict = item.id === 'boots'
         && (feetCoverage === 'partial' || feetCoverage === 'exposed');
 
-      const isDisabled = isIncompatible || isPrereqUnmet || isBootsConflict;
+      const chestCoverage  = state.bodyEmphasis?.chest ?? '';
+      const isChestConflict = chestCoverage === 'exposed'
+        && (item.id === 'tunic' || item.id === 'robe' || item.id === 'toga');
+
+      const isDisabled = isIncompatible || isPrereqUnmet || isBootsConflict || isChestConflict;
       const isChecked  = state.selectedCostumes.has(item.id) && !isDisabled;
 
       let title = '';
       if (isIncompatible) {
         title = 'Not compatible with this species';
+      } else if (isChestConflict) {
+        title = 'Incompatible with uncovered chest';
       } else if (isBootsConflict) {
         title = 'Incompatible with current feet coverage setting';
       } else if (isPrereqUnmet) {
@@ -376,14 +390,20 @@ function bindEvents() {
           }
         }
       }
+
+      // Robe and toga cover the abdomen — clear any body emphasis for it
+      if (id === 'robe' || id === 'toga') {
+        state.bodyEmphasis.abdomen = '';
+      }
     } else {
       state.selectedCostumes.delete(id);
       // If this item was a prerequisite for another selected item, remove that item too
       enforcePrerequisites(state.selectedCostumes);
     }
 
-    // Re-render costumes so deselected chips update visually
+    // Re-render costumes and body emphasis so disabled states stay in sync
     renderCostumes();
+    renderBodyEmphasis();
     renderOutput();
     renderSummary();
   });
@@ -417,11 +437,20 @@ function bindEvents() {
     // Boots are incompatible with partial/exposed feet coverage
     if (partId === 'feet' && (coverage === 'partial' || coverage === 'exposed')) {
       state.selectedCostumes.delete('boots');
-      renderCostumes();
-    } else if (partId === 'feet') {
-      renderCostumes();
     }
 
+    // Chest uncovered: remove clothing that covers the chest
+    if (partId === 'chest' && coverage === 'exposed') {
+      for (const id of ['tunic', 'robe', 'toga']) {
+        state.selectedCostumes.delete(id);
+      }
+      // Removing robe/toga unlocks abdomen — clear any stale value
+      state.bodyEmphasis.abdomen = '';
+      enforcePrerequisites(state.selectedCostumes);
+    }
+
+    renderCostumes();
+    renderBodyEmphasis();
     renderOutput();
     renderSummary();
   });

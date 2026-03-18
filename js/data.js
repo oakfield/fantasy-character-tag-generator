@@ -476,26 +476,6 @@ const COVERAGE_LEVELS = [
 /** @type {BodyPart[]} */
 const BODY_PARTS = [
   {
-    id: 'eyes',
-    label: 'Eyes',
-    getTags: (coverage) => {
-      if (coverage === 'covered') return ['detailed eyes'];
-      if (coverage === 'partial') return ['half-lidded eyes'];
-      if (coverage === 'exposed') return ['wide eyes'];
-      return [];
-    },
-  },
-  {
-    id: 'lips',
-    label: 'Lips',
-    getTags: (coverage) => {
-      if (coverage === 'covered') return ['closed mouth'];
-      if (coverage === 'partial') return ['parted lips'];
-      if (coverage === 'exposed') return ['open mouth'];
-      return [];
-    },
-  },
-  {
     id: 'chest',
     label: 'Chest',
     getTags: (coverage, sex, costumes) => {
@@ -529,7 +509,7 @@ const BODY_PARTS = [
       if (!coverage || coverage === 'covered') return [];
       const hasSkirt = costumes.has('skirt');
       if (coverage === 'partial') {
-        if (sex === 'female') return hasSkirt ? ['split skirt', 'thigh gap'] : ['thighhighs', 'thigh gap'];
+        if (sex === 'female') return hasSkirt ? ['split skirt'] : ['thighhighs'];
         return ['rolled up pants'];
       }
       if (coverage === 'exposed') return sex === 'female' ? ['bare thighs'] : ['bare legs'];
