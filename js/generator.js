@@ -89,20 +89,14 @@ function generateTags(state) {
     tags.push(...resolveTagsSpec(species.tags, state.sexId));
   }
 
-  // 3. Appearance color tags
-  // When a selector is "Any" (id: ''), fall back to the species's implied colour
-  // so that e.g. a vampire always gets red eyes unless explicitly overridden.
-  const implied = species?.impliedColors ?? {};
-  const resolveColor = (selectedId, impliedKey) =>
-    selectedId || (typeof implied[impliedKey] === 'string' ? implied[impliedKey] : '');
-
-  const hairColor = HAIR_COLORS.find((c) => c.id === resolveColor(state.hairColorId, 'hair'));
+  // 3. Appearance color tags (only when explicitly selected)
+  const hairColor = HAIR_COLORS.find((c) => c.id === state.hairColorId);
   if (hairColor?.tag) tags.push(hairColor.tag);
 
-  const eyeColor = EYE_COLORS.find((c) => c.id === resolveColor(state.eyeColorId, 'eyes'));
+  const eyeColor = EYE_COLORS.find((c) => c.id === state.eyeColorId);
   if (eyeColor?.tag) tags.push(eyeColor.tag);
 
-  const skinColor = SKIN_COLORS.find((c) => c.id === resolveColor(state.skinColorId, 'skin'));
+  const skinColor = SKIN_COLORS.find((c) => c.id === state.skinColorId);
   if (skinColor?.tag) tags.push(skinColor.tag);
 
   // 4. Job tags
