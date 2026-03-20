@@ -266,14 +266,43 @@ function applyState(newState) {
 // Event listeners
 // ---------------------------------------------------------------------------
 
+/**
+ * Sync colour selectors when the species changes.
+ * - Colours that were set by the old species's implied defaults are reset to ''.
+ * - Colours implied by the new species are applied when the selector is still ''.
+ * This keeps the dropdowns consistent with the generated tags.
+ * @param {string} oldSpeciesId
+ * @param {string} newSpeciesId
+ */
+function applyImpliedColors(oldSpeciesId, newSpeciesId) {
+  const oldImplied = SPECIES.find((s) => s.id === oldSpeciesId)?.impliedColors ?? {};
+  const newImplied = SPECIES.find((s) => s.id === newSpeciesId)?.impliedColors ?? {};
+
+  // Reset colours that were applied by the previous species's implied defaults
+  if (typeof oldImplied.hair === 'string' && state.hairColorId === oldImplied.hair) state.hairColorId = '';
+  if (typeof oldImplied.eyes === 'string' && state.eyeColorId === oldImplied.eyes) state.eyeColorId  = '';
+  if (typeof oldImplied.skin === 'string' && state.skinColorId === oldImplied.skin) state.skinColorId = '';
+
+  // Apply the new species's implied colours (only when selector is still Any)
+  if (typeof newImplied.hair === 'string' && !state.hairColorId) state.hairColorId = newImplied.hair;
+  if (typeof newImplied.eyes === 'string' && !state.eyeColorId)  state.eyeColorId  = newImplied.eyes;
+  if (typeof newImplied.skin === 'string' && !state.skinColorId) state.skinColorId = newImplied.skin;
+}
+
 function bindEvents() {
   // Species
   $('species-select').addEventListener('change', (e) => {
-    state.speciesId = /** @type {HTMLSelectElement} */ (e.target).value;
+    const oldSpeciesId = state.speciesId;
+    state.speciesId    = /** @type {HTMLSelectElement} */ (e.target).value;
+
+    // Sync colour selectors to the new species's implied defaults
+    applyImpliedColors(oldSpeciesId, state.speciesId);
+
     // Remove incompatible costumes, then re-check prerequisites
     const incompatible = getIncompatibleCostumes(state.speciesId);
     for (const id of incompatible) state.selectedCostumes.delete(id);
     enforcePrerequisites(state.selectedCostumes);
+    renderColorSelects();
     renderAll();
   });
 
