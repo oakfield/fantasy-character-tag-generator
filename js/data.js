@@ -41,18 +41,18 @@ const SPECIES = [
   {
     id: 'dark_elf',
     label: 'Dark Elf',
-    tags: ['dark elf', 'pointy ears', 'dark skin', 'white hair'],
+    tags: ['dark elf', 'pointy ears'],
     weight: 8,
     incompatibleCostumes: [],
-    impliedColors: { hair: true, skin: true },
+    impliedColors: { hair: 'white', skin: 'dark' },
   },
   {
     id: 'high_elf',
     label: 'High Elf',
-    tags: ['high elf', 'pointy ears', 'blonde hair'],
+    tags: ['high elf', 'pointy ears'],
     weight: 5,
     incompatibleCostumes: [],
-    impliedColors: { hair: true },
+    impliedColors: { hair: 'blonde' },
   },
   {
     id: 'orc',
@@ -89,10 +89,10 @@ const SPECIES = [
   {
     id: 'vampire',
     label: 'Vampire',
-    tags: ['vampire', 'fangs', 'pale skin', 'red eyes'],
+    tags: ['vampire', 'fangs'],
     weight: 6,
     incompatibleCostumes: [],
-    impliedColors: { skin: true, eyes: true },
+    impliedColors: { skin: 'pale', eyes: 'red' },
   },
   {
     id: 'slime',
