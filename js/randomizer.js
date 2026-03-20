@@ -112,8 +112,21 @@ function generateRandomCharacter() {
   // combinations (dark skin → dark eyes/hair; light skin → light eyes).
   // ---------------------------------------------------------------------------
 
-  const implied   = species.impliedColors ?? {};
-  const skinColor = implied.skin ? { id: '', toneGroup: null } : weightedRandom(SKIN_COLORS.filter((c) => c.weight > 0));
+  const implied = species.impliedColors ?? {};
+
+  // When impliedColors stores a colour ID string, use that colour directly so
+  // the UI selector reflects the species default and the user can override it.
+  // When it stores `true` (e.g. orc green skin comes from the species tag itself),
+  // leave the selector at "Any".
+  const resolveImplied = (pool, key) => {
+    const val = implied[key];
+    if (typeof val === 'string') return pool.find((c) => c.id === val) ?? { id: '' };
+    if (val) return { id: '' }; // true → skip random but don't set
+    return null; // not implied → pick randomly
+  };
+
+  const impliedSkin = resolveImplied(SKIN_COLORS, 'skin');
+  const skinColor   = impliedSkin ?? weightedRandom(SKIN_COLORS.filter((c) => c.weight > 0));
   const toneGroup = skinColor.toneGroup ?? null;
 
   /**
@@ -154,8 +167,10 @@ function generateRandomCharacter() {
   const baseHair = HAIR_COLORS.filter((c) => c.weight > 0);
   const hairPool = toneGroup === 'dark' ? applyMultipliers(baseHair, DARK_SKIN_HAIR_MULTIPLIERS) : baseHair;
 
-  const eyeColor  = implied.eyes ? { id: '' } : weightedRandom(eyePool);
-  const hairColor = implied.hair ? { id: '' } : weightedRandom(hairPool);
+  const impliedEye  = resolveImplied(EYE_COLORS,  'eyes');
+  const impliedHair = resolveImplied(HAIR_COLORS, 'hair');
+  const eyeColor    = impliedEye  ?? weightedRandom(eyePool);
+  const hairColor   = impliedHair ?? weightedRandom(hairPool);
 
   // Pick camera & framing — "Any" (id: '') is included in the pool with a high
   // weight, so framing will be left unspecified most of the time.
